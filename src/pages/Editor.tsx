@@ -9,26 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  FileText,
-  Download,
-  RotateCcw,
-  Eye,
-  BarChart3,
-  ClipboardList,
-  ArrowLeft,
-  TrendingUp,
+  FileText, Download, RotateCcw, Eye, BarChart3, ClipboardList,
+  ArrowLeft, TrendingUp, Save,
 } from "lucide-react";
 
 const Editor = () => {
   const navigate = useNavigate();
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
-    // Check for imported resume from upload flow
     const imported = sessionStorage.getItem("importedResume");
     if (imported) {
       sessionStorage.removeItem("importedResume");
       try { return JSON.parse(imported); } catch { /* fall through */ }
     }
-    return sampleResume;
+    const flowType = sessionStorage.getItem("flowType");
+    if (flowType === "create") {
+      return emptyResume;
+    }
+    return emptyResume;
   });
   const [jobDescription, setJobDescription] = useState("");
   const [initialScore, setInitialScore] = useState<number | null>(null);
@@ -39,7 +36,6 @@ const Editor = () => {
     [resumeData, jobDescription]
   );
 
-  // Track initial score for improvement indicator
   useEffect(() => {
     if (initialScore === null) {
       setInitialScore(analysis.ats_score);
@@ -52,9 +48,18 @@ const Editor = () => {
   const handleReset = () => { setResumeData(emptyResume); setInitialScore(null); };
   const handleLoadSample = () => setResumeData(sampleResume);
 
+  const handleSave = () => {
+    sessionStorage.setItem("savedResume", JSON.stringify(resumeData));
+    navigate("/preview");
+  };
+
   const scoreBadgeColor =
     analysis.ats_score >= 80 ? "bg-green-600" :
     analysis.ats_score >= 60 ? "bg-yellow-600" : "bg-destructive";
+
+  // Check if resume has meaningful content for save
+  const isResumeReady = resumeData.fullName.trim().length > 0 &&
+    (resumeData.summary.trim().length > 0 || resumeData.experiences.length > 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,9 +71,7 @@ const Editor = () => {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <FileText className="w-5 h-5 text-primary" />
-            <h1 className="font-display text-lg font-bold text-foreground tracking-tight">
-              FreeATS
-            </h1>
+            <h1 className="font-display text-lg font-bold text-foreground tracking-tight">FreeATS</h1>
             <span className={`ml-2 text-xs font-semibold text-primary-foreground px-2 py-0.5 rounded-full ${scoreBadgeColor}`}>
               ATS: {analysis.ats_score}%
             </span>
@@ -86,8 +89,8 @@ const Editor = () => {
             <Button variant="outline" size="sm" onClick={handleReset}>
               <RotateCcw className="w-4 h-4 mr-1" /> Reset
             </Button>
-            <Button size="sm" onClick={handlePrint}>
-              <Download className="w-4 h-4 mr-1" /> Download PDF
+            <Button variant="outline" size="sm" onClick={handlePrint}>
+              <Download className="w-4 h-4 mr-1" /> PDF
             </Button>
           </div>
         </div>
@@ -96,7 +99,7 @@ const Editor = () => {
       {/* 3-Panel Layout */}
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 py-6">
         <div className="flex flex-col xl:flex-row gap-6">
-          {/* Left Panel — Form & JD */}
+          {/* Left Panel */}
           <div className="no-print w-full xl:w-[420px] xl:shrink-0">
             <div className="bg-card rounded-xl border border-border p-5 shadow-sm sticky top-[72px] max-h-[calc(100vh-96px)] overflow-y-auto">
               <Tabs defaultValue="editor" className="w-full">
@@ -112,9 +115,7 @@ const Editor = () => {
                   <ResumeForm data={resumeData} onChange={setResumeData} />
                 </TabsContent>
                 <TabsContent value="jobdesc">
-                  <h2 className="font-display text-lg font-bold text-foreground mb-1">
-                    Job Description
-                  </h2>
+                  <h2 className="font-display text-lg font-bold text-foreground mb-1">Job Description</h2>
                   <p className="text-sm text-muted-foreground mb-4">
                     Paste the target job description for keyword matching.
                   </p>
@@ -133,17 +134,24 @@ const Editor = () => {
           {/* Center — Preview */}
           <div className="flex-1 min-w-0" ref={resumeRef}>
             <div className="no-print mb-3">
-              <h2 className="font-display text-lg font-bold text-foreground">
-                Live Preview
-              </h2>
+              <h2 className="font-display text-lg font-bold text-foreground">Live Preview</h2>
               <p className="text-sm text-muted-foreground">
-                ATS-optimized layout. Use "Download PDF" to save.
+                ATS-optimized layout. Fill in your details and save when ready.
               </p>
             </div>
             <ResumePreview data={resumeData} />
+
+            {/* Save Button at bottom */}
+            {isResumeReady && (
+              <div className="no-print mt-6 flex justify-center">
+                <Button size="lg" className="px-12 py-6 text-base shadow-lg" onClick={handleSave}>
+                  <Save className="w-5 h-5 mr-2" /> Save & Preview
+                </Button>
+              </div>
+            )}
           </div>
 
-          {/* Right Panel — ATS Score (always visible) */}
+          {/* Right Panel — ATS Score */}
           <div className="no-print w-full xl:w-[320px] xl:shrink-0">
             <div className="bg-card rounded-xl border border-border p-5 shadow-sm sticky top-[72px] max-h-[calc(100vh-96px)] overflow-y-auto">
               <div className="flex items-center gap-2 mb-4">
