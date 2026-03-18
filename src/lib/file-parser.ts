@@ -14,30 +14,42 @@ export async function parseFile(file: File): Promise<string> {
 }
 
 async function parsePDF(file: File): Promise<string> {
-  const pdfjsLib = await import("pdfjs-dist");
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+  try {
+    const pdfjsLib = await import("pdfjs-dist");
+    // Use a specific CDN URL that works both locally and in production
+    const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  const pages: string[] = [];
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pages: string[] = [];
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    const text = textContent.items
-      .map((item: any) => item.str)
-      .join(" ");
-    pages.push(text);
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const text = textContent.items
+        .map((item: any) => item.str)
+        .join(" ");
+      pages.push(text);
+    }
+
+    return pages.join("\n");
+  } catch (err) {
+    console.error("PDF parsing error:", err);
+    throw new Error("Failed to parse PDF. Please try a different file or use TXT/DOCX format.");
   }
-
-  return pages.join("\n");
 }
 
 async function parseDOCX(file: File): Promise<string> {
-  const mammoth = await import("mammoth");
-  const arrayBuffer = await file.arrayBuffer();
-  const result = await mammoth.extractRawText({ arrayBuffer });
-  return result.value;
+  try {
+    const mammoth = await import("mammoth");
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  } catch (err) {
+    console.error("DOCX parsing error:", err);
+    throw new Error("Failed to parse DOCX. Please try a different file or use TXT/PDF format.");
+  }
 }
 
 export function parseResumeText(text: string): ResumeData {
@@ -64,31 +76,23 @@ export function parseResumeText(text: string): ResumeData {
 
   // Simple section detection
   const sectionHeaders: Record<string, string> = {};
-  const sectionOrder: string[] = [];
   let currentSection = "header";
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
-    const lower = line.toLowerCase();
 
     if (/^(professional\s+)?summary/i.test(line) || /^(career\s+)?objective/i.test(line)) {
       currentSection = "summary";
-      sectionOrder.push(currentSection);
     } else if (/^skills?/i.test(line) || /^(technical|core)\s+skills/i.test(line)) {
       currentSection = "skills";
-      sectionOrder.push(currentSection);
     } else if (/^(work\s+)?experience/i.test(line) || /^employment/i.test(line)) {
       currentSection = "experience";
-      sectionOrder.push(currentSection);
     } else if (/^education/i.test(line)) {
       currentSection = "education";
-      sectionOrder.push(currentSection);
     } else if (/^(projects?|personal\s+projects?)/i.test(line)) {
       currentSection = "projects";
-      sectionOrder.push(currentSection);
     } else if (/^certif/i.test(line)) {
       currentSection = "certifications";
-      sectionOrder.push(currentSection);
     } else {
       if (!sectionHeaders[currentSection]) sectionHeaders[currentSection] = "";
       sectionHeaders[currentSection] += line + "\n";
@@ -109,12 +113,10 @@ export function parseResumeText(text: string): ResumeData {
   // Parse experience lines into entries
   if (sectionHeaders["experience"]) {
     const expLines = sectionHeaders["experience"].trim().split("\n").filter(Boolean);
-    // Simple heuristic: group into chunks
     let currentExp: { title: string; bullets: string[] } = { title: "", bullets: [] };
     const exps: typeof currentExp[] = [];
 
     for (const line of expLines) {
-      // If line looks like a title (no bullet marker, relatively short)
       if (!line.startsWith("•") && !line.startsWith("-") && !line.startsWith("*") && line.length < 80) {
         if (currentExp.title) exps.push(currentExp);
         currentExp = { title: line, bullets: [] };
@@ -146,7 +148,7 @@ export function parseResumeText(text: string): ResumeData {
     }];
   }
 
-  // Fallback: if no sections detected, use body as summary
+  // Fallback
   if (!data.summary && !data.skills && data.experiences.length === 0) {
     const bodyLines = lines.slice(1).filter(
       (l) => !l.includes(data.email) && !l.includes(data.phone)

@@ -2,9 +2,10 @@ import { ResumeData } from "@/types/resume";
 
 interface ResumePreviewProps {
   data: ResumeData;
+  template?: string;
 }
 
-const ResumePreview = ({ data }: ResumePreviewProps) => {
+const ResumePreview = ({ data, template = "classic" }: ResumePreviewProps) => {
   const hasCertifications = data.certifications.trim().length > 0;
   const hasProjects = data.projects.length > 0;
   const hasExperiences = data.experiences.length > 0;
@@ -14,119 +15,314 @@ const ResumePreview = ({ data }: ResumePreviewProps) => {
 
   const contactParts = [data.email, data.phone, data.location, data.linkedin].filter(Boolean);
 
+  if (template === "modern") return <ModernTemplate data={data} contactParts={contactParts} hasSummary={hasSummary} hasSkills={hasSkills} hasExperiences={hasExperiences} hasProjects={hasProjects} hasEducation={hasEducation} hasCertifications={hasCertifications} />;
+  if (template === "minimal") return <MinimalTemplate data={data} contactParts={contactParts} hasSummary={hasSummary} hasSkills={hasSkills} hasExperiences={hasExperiences} hasProjects={hasProjects} hasEducation={hasEducation} hasCertifications={hasCertifications} />;
+  return <ClassicTemplate data={data} contactParts={contactParts} hasSummary={hasSummary} hasSkills={hasSkills} hasExperiences={hasExperiences} hasProjects={hasProjects} hasEducation={hasEducation} hasCertifications={hasCertifications} />;
+};
+
+interface TemplateProps {
+  data: ResumeData;
+  contactParts: string[];
+  hasSummary: boolean;
+  hasSkills: boolean;
+  hasExperiences: boolean;
+  hasProjects: boolean;
+  hasEducation: boolean;
+  hasCertifications: boolean;
+}
+
+/* ═══════════════════════════════════════════
+   CLASSIC TEMPLATE
+   ═══════════════════════════════════════════ */
+function ClassicTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
   return (
-    <div className="resume-page p-[40px] w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border">
-      {/* Contact Information */}
+    <div className="resume-page p-[40px] w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       {data.fullName && (
-        <div className="text-center mb-1">
-          <h1 className="font-bold">{data.fullName}</h1>
+        <div className="text-center mb-1" style={{ borderBottom: "2px solid #1e3a5f", paddingBottom: "8px" }}>
+          <h1 style={{ color: "#1e3a5f", fontSize: "22pt", margin: 0, fontWeight: 700, letterSpacing: "0.02em" }}>{data.fullName}</h1>
           {contactParts.length > 0 && (
-            <p className="text-[10pt] mt-1">{contactParts.join(" | ")}</p>
+            <p style={{ fontSize: "10pt", color: "#555", marginTop: "4px" }}>{contactParts.join("  •  ")}</p>
           )}
         </div>
       )}
 
-      {/* Professional Summary */}
       {hasSummary && (
-        <div>
-          <h2>Professional Summary</h2>
+        <Section title="Professional Summary" color="#1e3a5f" style="classic">
           <p>{data.summary}</p>
-        </div>
+        </Section>
       )}
 
-      {/* Skills */}
       {hasSkills && (
-        <div>
-          <h2>Skills</h2>
+        <Section title="Skills" color="#1e3a5f" style="classic">
           <p>{data.skills}</p>
-        </div>
+        </Section>
       )}
 
-      {/* Work Experience */}
       {hasExperiences && (
-        <div>
-          <h2>Work Experience</h2>
+        <Section title="Work Experience" color="#1e3a5f" style="classic">
           {data.experiences.map((exp) => (
-            <div key={exp.id} className="mb-2">
-              <div className="flex justify-between items-baseline">
-                <span className="font-bold">{exp.title}</span>
-                <span className="text-[10pt]">{exp.dates}</span>
-              </div>
-              <div className="flex justify-between items-baseline">
-                <span className="italic">{exp.company}</span>
-                <span className="text-[10pt]">{exp.location}</span>
-              </div>
-              {exp.bullets.trim() && (
-                <ul className="list-disc">
-                  {exp.bullets
-                    .split("\n")
-                    .filter(Boolean)
-                    .map((b, i) => (
-                      <li key={i}>{b}</li>
-                    ))}
-                </ul>
-              )}
-            </div>
+            <ExperienceBlock key={exp.id} exp={exp} />
           ))}
-        </div>
+        </Section>
       )}
 
-      {/* Projects */}
       {hasProjects && (
-        <div>
-          <h2>Projects</h2>
+        <Section title="Projects" color="#1e3a5f" style="classic">
           {data.projects.map((proj) => (
             <div key={proj.id} className="mb-2">
               <span className="font-bold">{proj.name}</span>
-              {proj.description && <span> - {proj.description}</span>}
-              {proj.bullets.trim() && (
-                <ul className="list-disc">
-                  {proj.bullets
-                    .split("\n")
-                    .filter(Boolean)
-                    .map((b, i) => (
-                      <li key={i}>{b}</li>
-                    ))}
-                </ul>
-              )}
+              {proj.description && <span> — {proj.description}</span>}
+              {proj.bullets.trim() && <BulletList text={proj.bullets} />}
             </div>
           ))}
-        </div>
+        </Section>
       )}
 
-      {/* Education */}
       {hasEducation && (
-        <div>
-          <h2>Education</h2>
+        <Section title="Education" color="#1e3a5f" style="classic">
           {data.education.map((edu) => (
-            <div key={edu.id} className="mb-1">
-              <div className="flex justify-between items-baseline">
-                <span className="font-bold">{edu.degree}</span>
-                <span className="text-[10pt]">{edu.dates}</span>
-              </div>
-              <div>{edu.school}</div>
-              {edu.details && <div className="text-[10pt]">{edu.details}</div>}
-            </div>
+            <EducationBlock key={edu.id} edu={edu} />
           ))}
-        </div>
+        </Section>
       )}
 
-      {/* Certifications */}
       {hasCertifications && (
-        <div>
-          <h2>Certifications</h2>
-          <ul className="list-disc">
-            {data.certifications
-              .split("\n")
-              .filter(Boolean)
-              .map((c, i) => (
-                <li key={i}>{c}</li>
-              ))}
-          </ul>
-        </div>
+        <Section title="Certifications" color="#1e3a5f" style="classic">
+          <BulletList text={data.certifications} />
+        </Section>
       )}
     </div>
   );
-};
+}
+
+/* ═══════════════════════════════════════════
+   MODERN TEMPLATE
+   ═══════════════════════════════════════════ */
+function ModernTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#0e7490";
+  return (
+    <div className="resume-page w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border flex" style={{ fontFamily: "Arial, Helvetica, sans-serif", padding: 0 }}>
+      {/* Left accent strip */}
+      <div style={{ width: "6px", background: accent, flexShrink: 0 }} />
+      <div className="p-[36px] pl-[30px] flex-1">
+        {data.fullName && (
+          <div className="mb-3">
+            <h1 style={{ color: accent, fontSize: "24pt", margin: 0, fontWeight: 700 }}>{data.fullName}</h1>
+            {contactParts.length > 0 && (
+              <p style={{ fontSize: "10pt", color: "#666", marginTop: "4px" }}>{contactParts.join("  |  ")}</p>
+            )}
+          </div>
+        )}
+
+        {hasSummary && (
+          <Section title="Summary" color={accent} style="modern">
+            <p>{data.summary}</p>
+          </Section>
+        )}
+
+        {hasSkills && (
+          <Section title="Skills" color={accent} style="modern">
+            <p>{data.skills}</p>
+          </Section>
+        )}
+
+        {hasExperiences && (
+          <Section title="Experience" color={accent} style="modern">
+            {data.experiences.map((exp) => (
+              <div key={exp.id} className="mb-3" style={{ borderLeft: `2px solid ${accent}22`, paddingLeft: "10px" }}>
+                <ExperienceBlock exp={exp} />
+              </div>
+            ))}
+          </Section>
+        )}
+
+        {hasProjects && (
+          <Section title="Projects" color={accent} style="modern">
+            {data.projects.map((proj) => (
+              <div key={proj.id} className="mb-2" style={{ borderLeft: `2px solid ${accent}22`, paddingLeft: "10px" }}>
+                <span className="font-bold">{proj.name}</span>
+                {proj.description && <span> — {proj.description}</span>}
+                {proj.bullets.trim() && <BulletList text={proj.bullets} marker="›" />}
+              </div>
+            ))}
+          </Section>
+        )}
+
+        {hasEducation && (
+          <Section title="Education" color={accent} style="modern">
+            {data.education.map((edu) => (
+              <EducationBlock key={edu.id} edu={edu} />
+            ))}
+          </Section>
+        )}
+
+        {hasCertifications && (
+          <Section title="Certifications" color={accent} style="modern">
+            <BulletList text={data.certifications} marker="›" />
+          </Section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MINIMAL TEMPLATE
+   ═══════════════════════════════════════════ */
+function MinimalTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  return (
+    <div className="resume-page p-[48px] w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+      {data.fullName && (
+        <div className="text-center mb-4">
+          <h1 style={{ fontSize: "22pt", margin: 0, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#222" }}>{data.fullName}</h1>
+          {contactParts.length > 0 && (
+            <p style={{ fontSize: "9.5pt", color: "#888", marginTop: "6px", letterSpacing: "0.04em" }}>{contactParts.join("   ·   ")}</p>
+          )}
+        </div>
+      )}
+
+      {hasSummary && (
+        <div className="text-center mb-4" style={{ maxWidth: "85%", margin: "0 auto 16px" }}>
+          <p style={{ fontStyle: "italic", fontSize: "10.5pt", color: "#555", lineHeight: 1.6 }}>{data.summary}</p>
+        </div>
+      )}
+
+      <div style={{ borderTop: "1px solid #ddd", marginBottom: "14px" }} />
+
+      {hasSkills && (
+        <Section title="Skills" color="#555" style="minimal">
+          <p>{data.skills}</p>
+        </Section>
+      )}
+
+      {hasExperiences && (
+        <Section title="Experience" color="#555" style="minimal">
+          {data.experiences.map((exp) => (
+            <div key={exp.id} className="mb-3">
+              <div className="flex justify-between items-baseline">
+                <span className="font-bold">{exp.title} — <span className="font-normal">{exp.company}</span></span>
+                <span style={{ fontSize: "9pt", color: "#999" }}>{exp.dates}</span>
+              </div>
+              {exp.location && <div style={{ fontSize: "9.5pt", color: "#777" }}>{exp.location}</div>}
+              {exp.bullets.trim() && <BulletList text={exp.bullets} marker="–" />}
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {hasProjects && (
+        <Section title="Projects" color="#555" style="minimal">
+          {data.projects.map((proj) => (
+            <div key={proj.id} className="mb-2">
+              <span className="font-bold">{proj.name}</span>
+              {proj.description && <span> — {proj.description}</span>}
+              {proj.bullets.trim() && <BulletList text={proj.bullets} marker="–" />}
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {hasEducation && (
+        <Section title="Education" color="#555" style="minimal">
+          {data.education.map((edu) => (
+            <div key={edu.id} className="mb-1">
+              <span className="font-bold">{edu.degree}</span> — {edu.school}
+              {edu.dates && <span style={{ fontSize: "9pt", color: "#999", marginLeft: "8px" }}>{edu.dates}</span>}
+              {edu.details && <div style={{ fontSize: "9.5pt", color: "#777" }}>{edu.details}</div>}
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {hasCertifications && (
+        <Section title="Certifications" color="#555" style="minimal">
+          <BulletList text={data.certifications} marker="–" />
+        </Section>
+      )}
+    </div>
+  );
+}
+
+/* ── Shared Sub-components ──────────────────── */
+
+function Section({ title, color, style, children }: { title: string; color: string; style: "classic" | "modern" | "minimal"; children: React.ReactNode }) {
+  if (style === "modern") {
+    return (
+      <div className="mt-3">
+        <h2 style={{ fontSize: "12pt", color, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px", fontWeight: 700 }}>
+          <span style={{ width: "14px", height: "2px", background: color, display: "inline-block" }} />
+          {title}
+        </h2>
+        {children}
+      </div>
+    );
+  }
+  if (style === "minimal") {
+    return (
+      <div className="mb-3">
+        <h2 style={{ fontSize: "10pt", color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px", fontWeight: 700 }}>{title}</h2>
+        {children}
+      </div>
+    );
+  }
+  // classic
+  return (
+    <div>
+      <h2 style={{ fontSize: "13pt", color, textTransform: "uppercase", letterSpacing: "0.03em", borderBottom: `1.5px solid ${color}33`, paddingBottom: "2px", marginTop: "14px", marginBottom: "4px", fontWeight: 700 }}>{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function ExperienceBlock({ exp }: { exp: { title: string; company: string; location: string; dates: string; bullets: string } }) {
+  return (
+    <div className="mb-2">
+      <div className="flex justify-between items-baseline">
+        <span className="font-bold">{exp.title}</span>
+        <span style={{ fontSize: "10pt", color: "#777" }}>{exp.dates}</span>
+      </div>
+      <div className="flex justify-between items-baseline">
+        <span className="italic">{exp.company}</span>
+        <span style={{ fontSize: "10pt", color: "#777" }}>{exp.location}</span>
+      </div>
+      {exp.bullets.trim() && <BulletList text={exp.bullets} />}
+    </div>
+  );
+}
+
+function EducationBlock({ edu }: { edu: { degree: string; school: string; dates: string; details: string } }) {
+  return (
+    <div className="mb-1">
+      <div className="flex justify-between items-baseline">
+        <span className="font-bold">{edu.degree}</span>
+        <span style={{ fontSize: "10pt", color: "#777" }}>{edu.dates}</span>
+      </div>
+      <div>{edu.school}</div>
+      {edu.details && <div style={{ fontSize: "10pt", color: "#666" }}>{edu.details}</div>}
+    </div>
+  );
+}
+
+function BulletList({ text, marker }: { text: string; marker?: string }) {
+  const items = text.split("\n").filter(Boolean);
+  if (marker) {
+    return (
+      <ul style={{ margin: "2px 0", paddingLeft: "14px", listStyle: "none" }}>
+        {items.map((b, i) => (
+          <li key={i} style={{ marginBottom: "1px" }}>
+            <span style={{ marginRight: "4px", fontWeight: 600 }}>{marker}</span>{b}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <ul className="list-disc" style={{ margin: "2px 0", paddingLeft: "18px" }}>
+      {items.map((b, i) => (
+        <li key={i} style={{ marginBottom: "1px" }}>{b}</li>
+      ))}
+    </ul>
+  );
+}
 
 export default ResumePreview;
