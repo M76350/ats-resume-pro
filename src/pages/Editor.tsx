@@ -15,6 +15,8 @@ import {
 
 const Editor = () => {
   const navigate = useNavigate();
+  const selectedTemplate = sessionStorage.getItem("selectedTemplate") || "classic";
+
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     const imported = sessionStorage.getItem("importedResume");
     if (imported) {
@@ -50,6 +52,7 @@ const Editor = () => {
 
   const handleSave = () => {
     sessionStorage.setItem("savedResume", JSON.stringify(resumeData));
+    sessionStorage.setItem("selectedTemplate", selectedTemplate);
     navigate("/preview");
   };
 
@@ -57,7 +60,6 @@ const Editor = () => {
     analysis.ats_score >= 80 ? "bg-green-600" :
     analysis.ats_score >= 60 ? "bg-yellow-600" : "bg-destructive";
 
-  // Check if resume has meaningful content for save
   const isResumeReady = resumeData.fullName.trim().length > 0 &&
     (resumeData.summary.trim().length > 0 || resumeData.experiences.length > 0);
 
@@ -139,7 +141,7 @@ const Editor = () => {
                 ATS-optimized layout. Fill in your details and save when ready.
               </p>
             </div>
-            <ResumePreview data={resumeData} />
+            <ResumePreview data={resumeData} template={selectedTemplate} />
 
             {/* Save Button at bottom */}
             {isResumeReady && (

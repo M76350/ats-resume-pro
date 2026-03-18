@@ -6,13 +6,14 @@ import ResumePreview from "@/components/ResumePreview";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  FileText, ArrowLeft, Download, CheckCircle2, TrendingUp, Loader2,
+  FileText, ArrowLeft, Download, CheckCircle2, Loader2,
 } from "lucide-react";
 
 const Preview = () => {
   const navigate = useNavigate();
   const [resumeData, setResumeData] = useState<ResumeData>(emptyResume);
   const [loading, setLoading] = useState(true);
+  const selectedTemplate = sessionStorage.getItem("selectedTemplate") || "classic";
 
   useEffect(() => {
     const saved = sessionStorage.getItem("savedResume");
@@ -21,7 +22,6 @@ const Preview = () => {
         setResumeData(JSON.parse(saved));
       } catch { /* ignore */ }
     }
-    // Simulated preparation
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -76,7 +76,7 @@ const Preview = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Resume Preview */}
           <div className="flex-1 min-w-0">
-            <ResumePreview data={resumeData} />
+            <ResumePreview data={resumeData} template={selectedTemplate} />
           </div>
 
           {/* Side panel */}
