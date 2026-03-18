@@ -8,6 +8,7 @@ import Templates from "./pages/Templates";
 import Editor from "./pages/Editor";
 import Preview from "./pages/Preview";
 import NotFound from "./pages/NotFound";
+import { Analytics } from '@vercel/analytics/react'
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,8 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <Analytics />
+
     </TooltipProvider>
   </QueryClientProvider>
 );
