@@ -10,6 +10,7 @@ import {
   FileText, Upload, PenLine, CheckCircle2, AlertTriangle,
   XCircle, Target, Zap, TrendingUp, Sparkles, Shield, BarChart3, X, Loader2,
 } from "lucide-react";
+import Atshome from "@/components/ui/atshome";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
+
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -275,6 +277,8 @@ const Landing = () => {
           </div>
         </div>
       )}
+      <Atshome />
+
     </div>
   );
 };
