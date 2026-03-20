@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import Atshome from "@/components/ui/atshome";
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { blogPosts } from "@/data/blogPosts";
 
 const Landing = () => {
@@ -99,16 +97,15 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
       <SEO
         title="Free ATS Resume Checker & Builder (2026) — Improve Your Score Instantly | FreeATS"
         description="Free ATS resume checker and builder. Get an instant ATS compatibility score, keyword analysis, and actionable suggestions. No sign-up required. 100% free."
         canonical="/"
       />
-      <Header />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section id="upload-section" className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center relative">
           <Badge variant="secondary" className="mb-4 text-xs font-medium px-3 py-1">
@@ -509,9 +506,7 @@ const Landing = () => {
           </div>
         </div>
       )}
-
-      <Footer />
-    </div>
+    </>
   );
 };
 

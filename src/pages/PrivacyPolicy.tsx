@@ -1,6 +1,4 @@
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-7">
@@ -10,15 +8,14 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 const PrivacyPolicy = () => (
-  <div className="min-h-screen bg-background flex flex-col">
+  <>
     <SEO
       title="Privacy Policy | FreeATS"
       description="Read the FreeATS Privacy Policy to understand how we handle your data. We do not store or share your resume data."
       canonical="/privacy-policy"
     />
-    <Header />
 
-    <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
       <h1 className="font-display text-4xl font-extrabold text-foreground mb-2">Privacy Policy</h1>
       <p className="text-sm text-muted-foreground mb-8">Last updated: March 20, 2026</p>
 
@@ -70,9 +67,7 @@ const PrivacyPolicy = () => (
         <p>If you have questions about this Privacy Policy, please contact us at support@freeats.vercel.app.</p>
       </Section>
     </main>
-
-    <Footer />
-  </div>
+  </>
 );
 
 export default PrivacyPolicy;

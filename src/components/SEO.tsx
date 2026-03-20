@@ -12,9 +12,9 @@ interface SEOProps {
   keywords?: string;
 }
 
-export const SITE_URL = "https://freeats.in";
+export const SITE_URL = "https://ats-resume-pro-swart.vercel.app";
 export const SITE_NAME = "FreeATS";
-const DEFAULT_IMAGE = `${SITE_URL}/ats-resume-checker-og.jpg`;
+const DEFAULT_IMAGE = `${SITE_URL}/FreeATS.jpg`;
 
 const SEO = ({
   title,

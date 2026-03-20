@@ -1,6 +1,4 @@
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-7">
@@ -10,15 +8,14 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 const TermsAndConditions = () => (
-  <div className="min-h-screen bg-background flex flex-col">
+  <>
     <SEO
       title="Terms and Conditions | FreeATS"
       description="Read the FreeATS Terms and Conditions. By using our free ATS resume checker and builder, you agree to these terms."
       canonical="/terms-and-conditions"
     />
-    <Header />
 
-    <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
       <h1 className="font-display text-4xl font-extrabold text-foreground mb-2">Terms and Conditions</h1>
       <p className="text-sm text-muted-foreground mb-8">Last updated: March 20, 2026</p>
 
@@ -76,9 +73,7 @@ const TermsAndConditions = () => (
         <p>For questions about these Terms, contact us at support@freeats.vercel.app.</p>
       </Section>
     </main>
-
-    <Footer />
-  </div>
+  </>
 );
 
 export default TermsAndConditions;

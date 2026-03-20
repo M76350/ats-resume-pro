@@ -3,4 +3,4 @@ Allow: /
 Disallow: /editor
 Disallow: /preview
 
-Sitemap: https://freeats.vercel.app/sitemap.xml
+Sitemap: https://ats-resume-pro-swart.vercel.app/sitemap.xml

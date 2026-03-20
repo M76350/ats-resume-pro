@@ -1,6 +1,4 @@
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-7">
@@ -10,15 +8,14 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 const Disclaimer = () => (
-  <div className="min-h-screen bg-background flex flex-col">
+  <>
     <SEO
       title="Disclaimer | FreeATS"
       description="Read the FreeATS Disclaimer. Our ATS scoring tool provides general guidance and does not guarantee job placement or ATS compatibility with any specific employer system."
       canonical="/disclaimer"
     />
-    <Header />
 
-    <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
       <h1 className="font-display text-4xl font-extrabold text-foreground mb-2">Disclaimer</h1>
       <p className="text-sm text-muted-foreground mb-8">Last updated: March 20, 2026</p>
 
@@ -51,9 +48,7 @@ const Disclaimer = () => (
         <p>If you have questions about this Disclaimer, please contact us at support@freeats.vercel.app.</p>
       </Section>
     </main>
-
-    <Footer />
-  </div>
+  </>
 );
 
 export default Disclaimer;
