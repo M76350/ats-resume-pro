@@ -1,7 +1,5 @@
 import { useState } from "react";
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,15 +17,14 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
       <SEO
         title="Contact FreeATS — Get in Touch"
         description="Have a question, feedback, or partnership inquiry? Contact the FreeATS team. We'd love to hear from you."
         canonical="/contact"
       />
-      <Header />
 
-      <main className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 py-12 w-full">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12 w-full">
         <h1 className="font-display text-4xl font-extrabold text-foreground mb-3">Contact Us</h1>
         <p className="text-muted-foreground mb-8">
           Have a question, feedback, or partnership inquiry? We'd love to hear from you.
@@ -106,9 +103,7 @@ const Contact = () => {
           </form>
         )}
       </main>
-
-      <Footer />
-    </div>
+    </>
   );
 };
 

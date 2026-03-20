@@ -1,21 +1,18 @@
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { FileText, Target, Shield, Zap, Mail, Github, Linkedin, User } from "lucide-react";
 
 const About = () => (
-  <div className="min-h-screen bg-background flex flex-col">
+  <>
     <SEO
       title="About FreeATS — Free ATS Resume Checker & Builder"
       description="Learn about FreeATS, built by Manish Yadav. A free, no-signup ATS resume checker and builder helping job seekers optimize resumes to pass applicant tracking systems."
       canonical="/about"
       keywords="about FreeATS, Manish Yadav, ATS resume checker, free resume builder"
     />
-    <Header />
 
-    <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
       <h1 className="font-display text-4xl font-extrabold text-foreground mb-4">About FreeATS</h1>
       <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
         FreeATS is a free, no-signup-required ATS resume checker and builder designed to help job seekers at every level optimize their resumes and land more interviews.
@@ -39,10 +36,10 @@ const About = () => (
             <a href="mailto:manish@freeats.in" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <Mail className="w-3.5 h-3.5" /> manish@freeats.in
             </a>
-            <a href="https://linkedin.com/in/manishyadav" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <a href="https://www.linkedin.com/in/manish0911/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <Linkedin className="w-3.5 h-3.5" /> LinkedIn
             </a>
-            <a href="https://github.com/manishyadav" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <a href="https://github.com/M76350" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <Github className="w-3.5 h-3.5" /> GitHub
             </a>
           </div>
@@ -92,9 +89,7 @@ const About = () => (
         </Button>
       </div>
     </main>
-
-    <Footer />
-  </div>
+  </>
 );
 
 export default About;

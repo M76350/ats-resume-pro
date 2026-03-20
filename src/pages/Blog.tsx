@@ -1,60 +1,96 @@
-import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { blogPosts } from "@/data/blogPosts";
 import SEO from "@/components/SEO";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
-import { Clock, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, ArrowRight, ArrowLeft, User, ChevronLeft, ChevronRight } from "lucide-react";
 
-const Blog = () => (
-  <div className="min-h-screen bg-background flex flex-col">
-    <SEO
-      title="ATS Resume Blog — Tips, Guides & Career Advice | FreeATS"
-      description="Read expert guides on ATS resumes, resume writing tips, job search strategies, and career advice. Free resources to help you land more interviews."
-      canonical="/blog"
-    />
-    <Header />
+const PAGE_SIZE = 6;
 
-    <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 py-12 w-full">
-      <div className="mb-10">
-        <h1 className="font-display text-4xl font-extrabold text-foreground mb-3">
-          ATS Resume Blog
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
-          Expert guides on resume writing, ATS optimization, and job search strategies to help you land more interviews.
+const Blog = () => {
+  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const categories = useMemo(() => ["All", ...Array.from(new Set(blogPosts.map((p) => p.category)))], []);
+  const filtered = useMemo(() => activeCategory === "All" ? blogPosts : blogPosts.filter((p) => p.category === activeCategory), [activeCategory]);
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  return (
+    <>
+      <SEO
+        title="ATS Resume Blog — Tips, Guides & Career Advice | FreeATS"
+        description="Read expert guides on ATS resumes, resume writing tips, job search strategies, and career advice. Free resources to help you land more interviews."
+        canonical="/blog"
+      />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 w-full">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+
+        <div className="mb-8">
+          <h1 className="font-display text-4xl font-extrabold text-foreground mb-3">ATS Resume Blog</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">Expert guides on resume writing, ATS optimization, and job search strategies.</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-8">
+          {categories.map((cat) => (
+            <button key={cat} onClick={() => { setActiveCategory(cat); setPage(1); }}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                activeCategory === cat ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+              }`}
+            >{cat}</button>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground mb-5">
+          Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} articles
         </p>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {blogPosts.map((post) => (
-          <Link
-            key={post.slug}
-            to={`/blog/${post.slug}`}
-            className="group bg-card border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <Badge variant="secondary" className="text-xs">{post.category}</Badge>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="w-3 h-3" /> {post.readTime}
-              </span>
-            </div>
-            <h2 className="font-display text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-              {post.title}
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{post.description}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{post.date}</span>
-              <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                Read more <ArrowRight className="w-3 h-3" />
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          {paginated.map((post) => (
+            <Link key={post.slug} to={`/blog/${post.slug}`}
+              className="group bg-card border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all flex flex-col"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="secondary" className="text-xs">{post.category}</Badge>
+                <span className="flex items-center gap-1 text-xs text-muted-foreground"><Clock className="w-3 h-3" /> {post.readTime}</span>
+              </div>
+              <h2 className="font-display text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2 flex-1">{post.title}</h2>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{post.description}</p>
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">{post.date}</span>
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground"><User className="w-3 h-3" /> {post.author}</span>
+                </div>
+                <span className="flex items-center gap-1 text-xs text-primary font-medium">Read more <ArrowRight className="w-3 h-3" /></span>
+              </div>
+            </Link>
+          ))}
+        </div>
 
-    <Footer />
-  </div>
-);
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+              <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button key={p} onClick={() => setPage(p)}
+                  className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+                >{p}</button>
+              ))}
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+              Next <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default Blog;
