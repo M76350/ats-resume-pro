@@ -335,6 +335,57 @@ const Landing = () => {
 
       <Atshome />
 
+      {/* FAQ Section */}
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 w-full">
+        <h2 className="font-display text-3xl font-extrabold text-foreground text-center mb-3">
+          Frequently Asked Questions
+        </h2>
+        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto">
+          Everything you need to know about ATS resumes and our free tool.
+        </p>
+        <div className="space-y-4">
+          {[
+            {
+              q: "What is an ATS resume checker?",
+              a: "An ATS resume checker analyzes your resume against the criteria used by Applicant Tracking Systems — the software employers use to automatically screen job applications. It checks for keyword match, formatting quality, section completeness, and more.",
+            },
+            {
+              q: "Is FreeATS really free?",
+              a: "Yes, 100% free. No sign-up, no credit card, no hidden fees. You can upload your resume and get an instant ATS score without creating an account.",
+            },
+            {
+              q: "Does FreeATS store my resume data?",
+              a: "No. All resume processing happens entirely in your browser. Your resume data never leaves your device and is never stored on our servers.",
+            },
+            {
+              q: "What file formats does FreeATS support?",
+              a: "FreeATS supports PDF, DOCX, DOC, and TXT files. For best results, use a text-based PDF or DOCX file.",
+            },
+            {
+              q: "What does the ATS score mean?",
+              a: "The ATS score (0–100) represents how well your resume is likely to perform in an ATS system. Scores above 80 are excellent, 60–80 is good, and below 60 needs improvement. The score is based on 5 criteria: section completeness, keyword match, formatting, quantification, and action verb usage.",
+            },
+            {
+              q: "How do I improve my ATS score?",
+              a: "The most impactful improvements are: (1) tailor your resume to the job description, (2) add a dedicated skills section, (3) use standard section headings, (4) quantify your achievements with numbers, and (5) use a clean single-column layout.",
+            },
+            {
+              q: "Can I use FreeATS to build a resume from scratch?",
+              a: "Yes! Click 'Create Resume' to use our resume builder. You can choose from 3 ATS-friendly templates, fill in your information, and download your resume as a PDF.",
+            },
+            {
+              q: "How accurate is the ATS score?",
+              a: "FreeATS uses scoring criteria based on research into how real ATS systems work. While no tool can perfectly replicate every employer's specific ATS, our scoring is based on the most common and impactful factors across major platforms like Workday, Greenhouse, and Lever.",
+            },
+          ].map(({ q, a }, i) => (
+            <div key={i} className="bg-card border border-border rounded-xl p-5">
+              <h3 className="font-display font-bold text-foreground mb-2">{q}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">

@@ -1,11 +1,11 @@
 import { useParams, Link, Navigate } from "react-router-dom";
-import { getBlogPost, blogPosts } from "@/data/blogPosts";
+import { getBlogPost, getRelatedPosts } from "@/data/blogPosts";
 import SEO from "@/components/SEO";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, ArrowLeft, ArrowRight, Upload } from "lucide-react";
+import { Clock, ArrowLeft, ArrowRight, Upload, User, Calendar } from "lucide-react";
 
 // Minimal markdown-to-JSX renderer (handles ## headings, **bold**, bullet lists)
 function renderMarkdown(content: string) {
@@ -78,7 +78,7 @@ const BlogPost = () => {
 
   if (!post) return <Navigate to="/blog" replace />;
 
-  const otherPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 3);
+  const relatedPosts = getRelatedPosts(post.slug, 3);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -87,6 +87,9 @@ const BlogPost = () => {
         description={post.description}
         canonical={`/blog/${post.slug}`}
         ogType="article"
+        author={post.author}
+        publishedDate={post.date}
+        keywords={`${post.category}, ATS resume, resume tips, ${post.title.toLowerCase()}`}
       />
       <Header />
 
@@ -103,12 +106,18 @@ const BlogPost = () => {
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="w-3 h-3" /> {post.readTime}
             </span>
-            <span className="text-xs text-muted-foreground">{post.date}</span>
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Calendar className="w-3 h-3" /> {post.date}
+            </span>
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground mb-4 leading-tight">
             {post.title}
           </h1>
-          <p className="text-lg text-muted-foreground">{post.description}</p>
+          <p className="text-lg text-muted-foreground mb-4">{post.description}</p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <User className="w-3.5 h-3.5" />
+            <span>By <strong className="text-foreground">{post.author}</strong></span>
+          </div>
         </div>
 
         {/* Content */}
@@ -132,11 +141,11 @@ const BlogPost = () => {
         </div>
 
         {/* Related posts */}
-        {otherPosts.length > 0 && (
+        {relatedPosts.length > 0 && (
           <div className="mt-12">
             <h2 className="font-display text-xl font-bold text-foreground mb-4">Related Articles</h2>
             <div className="space-y-3">
-              {otherPosts.map((p) => (
+              {relatedPosts.map((p) => (
                 <Link
                   key={p.slug}
                   to={`/blog/${p.slug}`}
