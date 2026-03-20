@@ -8,6 +8,7 @@ import { analyzeResume } from "@/lib/ats-analyzer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SEO from "@/components/SEO";
 import {
   FileText, Download, RotateCcw, Eye, BarChart3, ClipboardList,
   ArrowLeft, TrendingUp, Save,
@@ -65,6 +66,12 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Resume Builder — Build Your ATS Resume | FreeATS"
+        description="Build your ATS-optimized resume with our free resume builder. Live preview, real-time ATS scoring, and PDF download. No sign-up required."
+        canonical="/editor"
+        noIndex={true}
+      />
       {/* Header */}
       <header className="no-print border-b border-border bg-card sticky top-0 z-50">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
