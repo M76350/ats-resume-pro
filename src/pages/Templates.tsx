@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ResumeData, sampleResume } from "@/types/resume";
 import { Button } from "@/components/ui/button";
 import ResumePreview from "@/components/ResumePreview";
+import SEO from "@/components/SEO";
 import { FileText, ArrowLeft, Loader2, Check } from "lucide-react";
 
 const templateStyles = [
@@ -57,6 +58,11 @@ const Templates = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="ATS Resume Templates — Classic, Modern & Minimal | FreeATS"
+        description="Choose from 3 ATS-friendly resume templates: Classic, Modern, and Minimal. All templates are optimized to pass applicant tracking systems."
+        canonical="/templates"
+      />
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">

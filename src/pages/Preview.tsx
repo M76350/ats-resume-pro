@@ -5,6 +5,7 @@ import { analyzeResume } from "@/lib/ats-analyzer";
 import ResumePreview from "@/components/ResumePreview";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import SEO from "@/components/SEO";
 import {
   FileText, ArrowLeft, Download, CheckCircle2, Loader2,
 } from "lucide-react";
@@ -56,6 +57,12 @@ const Preview = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Resume Preview & Download | FreeATS"
+        description="Preview your ATS-optimized resume and download it as a PDF. Free resume builder with instant ATS scoring."
+        canonical="/preview"
+        noIndex={true}
+      />
       {/* Header */}
       <header className="no-print border-b border-border bg-card sticky top-0 z-50">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
