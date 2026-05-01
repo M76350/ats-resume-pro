@@ -13,22 +13,24 @@ import {
 } from "lucide-react";
 
 // ── Template definitions ─────────────────────────────────────────────
+// ── 6 UNIQUE Fresher templates ────────────────────────────────────────
 const FRESHER_TEMPLATES = [
-  { id: "classic", name: "Classic", tag: "Most Popular", tagColor: "bg-blue-100 text-blue-700", desc: "Clean, traditional layout. Perfect for campus placements and first jobs.", bestFor: "BCA, B.Tech, MBA Freshers", color: "#1e3a5f" },
-  { id: "bold", name: "Bold", tag: "Stand Out", tagColor: "bg-purple-100 text-purple-700", desc: "Strong header bar with vibrant accent. Makes your resume memorable.", bestFor: "Creative & Tech Freshers", color: "#7c3aed" },
-  { id: "compact", name: "Compact", tag: "Space Efficient", tagColor: "bg-green-100 text-green-700", desc: "Fits more content on one page. Great when you have projects & internships.", bestFor: "Engineering Students", color: "#059669" },
-  { id: "modern", name: "Modern", tag: "ATS Friendly", tagColor: "bg-teal-100 text-teal-700", desc: "Contemporary design with teal accent. Works great for IT & startup roles.", bestFor: "IT & Software Freshers", color: "#0e7490" },
-  { id: "minimal", name: "Minimal", tag: "Clean & Simple", tagColor: "bg-gray-100 text-gray-700", desc: "Spacious serif layout. Elegant and distraction-free.", bestFor: "Design & Arts Freshers", color: "#555" },
-  { id: "elegant", name: "Elegant", tag: "Premium Look", tagColor: "bg-amber-100 text-amber-700", desc: "Warm serif tones with centered header. Sophisticated and professional.", bestFor: "MBA & Finance Freshers", color: "#92400e" },
+  { id: "classic",  name: "Classic",  tag: "Most Popular",    tagColor: "bg-blue-100 text-blue-700",   desc: "Clean, traditional single-column layout. Perfect for campus placements and first jobs.",       bestFor: "BCA, B.Tech, MBA Freshers" },
+  { id: "bold",     name: "Bold",     tag: "Stand Out",       tagColor: "bg-purple-100 text-purple-700",desc: "Strong purple header bar. Makes your resume memorable and eye-catching.",                    bestFor: "Creative & Tech Freshers" },
+  { id: "compact",  name: "Compact",  tag: "Space Efficient", tagColor: "bg-green-100 text-green-700",  desc: "Green accent, fits more content on one page. Great for projects & internships.",             bestFor: "Engineering Students" },
+  { id: "impact",   name: "Impact",   tag: "High Energy",     tagColor: "bg-orange-100 text-orange-700",desc: "Bold orange left-border accent. Energetic and modern — great for tech & startup roles.",     bestFor: "IT & Software Freshers" },
+  { id: "clean",    name: "Clean",    tag: "Fresh Look",      tagColor: "bg-teal-100 text-teal-700",    desc: "Teal header bar with clean white body. Simple, modern, and highly readable.",                bestFor: "Design & Commerce Freshers" },
+  { id: "sharp",    name: "Sharp",    tag: "Bold Sidebar",    tagColor: "bg-indigo-100 text-indigo-700",desc: "Dark indigo sidebar with white text. Projects and skills stand out immediately.",            bestFor: "CS & Engineering Students" },
 ];
 
+// ── 6 UNIQUE Experienced templates ───────────────────────────────────
 const EXPERIENCED_TEMPLATES = [
-  { id: "executive", name: "Executive", tag: "Senior Roles", tagColor: "bg-blue-100 text-blue-700", desc: "Two-column sidebar layout. Highlights leadership and achievements.", bestFor: "Managers & Senior Engineers", color: "#1e3a5f" },
-  { id: "modern", name: "Modern", tag: "Most Popular", tagColor: "bg-teal-100 text-teal-700", desc: "Clean teal accent with strong hierarchy. Ideal for product & tech roles.", bestFor: "Product Managers & Developers", color: "#0e7490" },
-  { id: "elegant", name: "Elegant", tag: "Premium", tagColor: "bg-amber-100 text-amber-700", desc: "Warm serif premium layout. Perfect for finance, consulting, and leadership.", bestFor: "Finance & Consulting Pros", color: "#92400e" },
-  { id: "classic", name: "Classic", tag: "Trusted Format", tagColor: "bg-gray-100 text-gray-700", desc: "Traditional corporate layout. Trusted by Fortune 500 recruiters.", bestFor: "Corporate & Government Roles", color: "#1e3a5f" },
-  { id: "minimal", name: "Minimal", tag: "Editorial", tagColor: "bg-gray-100 text-gray-700", desc: "Refined spacious layout. Lets your experience speak for itself.", bestFor: "Senior Designers & Academics", color: "#555" },
-  { id: "bold", name: "Bold", tag: "High Impact", tagColor: "bg-purple-100 text-purple-700", desc: "Strong visual header. Great for sales, marketing, and leadership roles.", bestFor: "Sales & Marketing Leaders", color: "#7c3aed" },
+  { id: "executive", name: "Executive", tag: "Senior Roles",   tagColor: "bg-blue-100 text-blue-700",   desc: "Two-column sidebar layout. Highlights leadership, skills, and career progression.",          bestFor: "Managers & Senior Engineers" },
+  { id: "navy",      name: "Navy",      tag: "Corporate",      tagColor: "bg-slate-100 text-slate-700",  desc: "Deep navy header with clean white body. Professional and authoritative.",                   bestFor: "Corporate & Finance Roles" },
+  { id: "slate",     name: "Slate",     tag: "Modern Pro",     tagColor: "bg-gray-100 text-gray-700",    desc: "Gray sidebar with clean main content area. Balanced and highly professional.",              bestFor: "Product Managers & Developers" },
+  { id: "elegant",   name: "Elegant",   tag: "Premium",        tagColor: "bg-amber-100 text-amber-700",  desc: "Warm serif premium layout. Perfect for finance, consulting, and leadership roles.",         bestFor: "Finance & Consulting Pros" },
+  { id: "crisp",     name: "Crisp",     tag: "Sharp & Clean",  tagColor: "bg-blue-100 text-blue-700",    desc: "Blue gradient underline header. Clean, modern, and highly ATS-compatible.",                 bestFor: "Tech & Product Leaders" },
+  { id: "minimal",   name: "Minimal",   tag: "Editorial",      tagColor: "bg-gray-100 text-gray-700",    desc: "Refined spacious serif layout. Lets your experience and achievements speak for themselves.", bestFor: "Senior Designers & Academics" },
 ];
 
 // ── Flow choice modal ─────────────────────────────────────────────────

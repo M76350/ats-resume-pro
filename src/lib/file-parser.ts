@@ -1,347 +1,401 @@
 import { ResumeData, emptyResume } from "@/types/resume";
 
+// ─── File readers ────────────────────────────────────────────────────
+
 export async function parseFile(file: File): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase();
-
-  if (ext === "pdf") {
-    return parsePDF(file);
-  } else if (ext === "docx" || ext === "doc") {
-    return parseDOCX(file);
-  } else if (ext === "txt" || ext === "text") {
-    return file.text();
-  }
+  if (ext === "pdf") return parsePDF(file);
+  if (ext === "docx" || ext === "doc") return parseDOCX(file);
+  if (ext === "txt" || ext === "text") return file.text();
   throw new Error("Unsupported file type. Please upload PDF, DOCX, or TXT.");
 }
 
 async function parsePDF(file: File): Promise<string> {
   try {
     const pdfjsLib = await import("pdfjs-dist");
-    const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
     const pages: string[] = [];
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const items = textContent.items as any[];
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const items = content.items as Array<{ str: string; transform: number[] }>;
 
-      // Group text items by their Y position to reconstruct lines
-      const lineMap = new Map<number, { x: number; str: string }[]>();
+      // Group by Y coordinate (rounded to 3px buckets for robustness)
+      const lineMap = new Map<number, Array<{ x: number; str: string }>>();
       for (const item of items) {
-        if (!item.str || item.str.trim() === "") continue;
-        // Round Y to nearest 2px to group items on the same line
-        const y = Math.round(item.transform[5] / 2) * 2;
+        if (!item.str?.trim()) continue;
+        const y = Math.round(item.transform[5] / 3) * 3;
         if (!lineMap.has(y)) lineMap.set(y, []);
         lineMap.get(y)!.push({ x: item.transform[4], str: item.str });
       }
 
-      // Sort by Y descending (PDF coords are bottom-up), then X ascending within each line
-      const sortedYs = Array.from(lineMap.keys()).sort((a, b) => b - a);
+      const sortedYs = [...lineMap.keys()].sort((a, b) => b - a);
       const pageLines: string[] = [];
       for (const y of sortedYs) {
-        const items = lineMap.get(y)!.sort((a, b) => a.x - b.x);
-        const lineText = items.map((it) => it.str).join(" ").trim();
-        if (lineText) pageLines.push(lineText);
+        const sorted = lineMap.get(y)!.sort((a, b) => a.x - b.x);
+        // Join with space only if items are far apart (avoid double-spacing)
+        let line = "";
+        for (let i = 0; i < sorted.length; i++) {
+          if (i === 0) { line = sorted[i].str; continue; }
+          const gap = sorted[i].x - (sorted[i - 1].x + (sorted[i - 1].str.length * 5));
+          line += (gap > 8 ? " " : "") + sorted[i].str;
+        }
+        line = line.trim();
+        if (line) pageLines.push(line);
       }
       pages.push(pageLines.join("\n"));
     }
-
     return pages.join("\n");
   } catch (err) {
     console.error("PDF parsing error:", err);
-    throw new Error("Failed to parse PDF. Please try a different file or use TXT/DOCX format.");
+    throw new Error("Failed to parse PDF. Please try DOCX or TXT format.");
   }
 }
 
 async function parseDOCX(file: File): Promise<string> {
   try {
     const mammoth = await import("mammoth");
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
+    const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
     return result.value;
   } catch (err) {
     console.error("DOCX parsing error:", err);
-    throw new Error("Failed to parse DOCX. Please try a different file or use TXT/PDF format.");
+    throw new Error("Failed to parse DOCX. Please try PDF or TXT format.");
   }
 }
 
-// ─── Section patterns ───────────────────────────────────────────────
-type Section = "header" | "summary" | "skills" | "experience" | "education" | "projects" | "certifications";
+// ─── Regex constants ─────────────────────────────────────────────────
 
-const SECTION_PATTERNS: [RegExp, Section][] = [
-  [/^(professional\s+|career\s+)?(summary|objective|profile|about\s*me)/i, "summary"],
-  [/^(technical\s+|core\s+|key\s+|relevant\s+)?skills|^competenc|^expertise|^technologies/i, "skills"],
-  [/^(work\s+|professional\s+)?experience|^employment|^work\s+history|^career\s+history/i, "experience"],
-  [/^education(al)?(\s+background)?|^academic/i, "education"],
-  [/^(personal\s+|key\s+|academic\s+)?projects?/i, "projects"],
-  [/^certif(ications?|icates?)|^licenses?(\s+(&|and)\s+certif)?|^awards?\s*((&|and)\s*certif)?/i, "certifications"],
+const EMAIL_RE    = /[\w.+-]+@[\w.-]+\.\w{2,}/;
+const PHONE_RE    = /(?:\+?\d{1,3}[\s\-.]?)?\(?\d{2,4}\)?[\s\-.]?\d{3,4}[\s\-.]?\d{3,4}/;
+const LINKEDIN_RE = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[\w\-]+/i;
+const GITHUB_RE   = /(?:https?:\/\/)?(?:www\.)?github\.com\/[\w\-]+/i;
+const URL_RE      = /https?:\/\/[^\s]+/gi;
+
+// Location: "City, ST" or "City, State" or just "City, Country"
+const LOCATION_RE = /\b([A-Z][a-zA-Z\s]{1,20},\s*(?:[A-Z]{2}|[A-Z][a-zA-Z]{2,15}))\b/;
+
+// Date range: "Jan 2020 – Present", "2019 - 2022", "03/2021 – Current" etc.
+const DATE_RE = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|\d{1,2}\/\d{2,4}|\d{4})\b.{0,20}\b(\d{4}|present|current|ongoing|till\s+date|now|today)\b/i;
+
+// Degree keywords
+const DEGREE_RE = /\b(b\.?\s*s\.?c?|b\.?\s*a\.?|b\.?\s*e\.?|b\.?\s*tech|b\.?\s*com|b\.?\s*sc|m\.?\s*s\.?c?|m\.?\s*a\.?|m\.?\s*tech|m\.?\s*b\.?\s*a|m\.?\s*c\.?\s*a|m\.?\s*com|ph\.?\s*d|bachelor|master|associate|diploma|certificate|doctor|engineering|b\.?c\.?a|b\.?b\.?a|b\.?c\.?s)\b/i;
+
+// Bullet markers
+const BULLET_RE = /^[•\-*▪▸◦›‣⁃→➤✓✔☑◆◇▶]\s+/;
+const NUMBERED_RE = /^\d+[.)]\s+/;
+
+function isBullet(line: string) { return BULLET_RE.test(line) || NUMBERED_RE.test(line); }
+function stripBullet(line: string) { return line.replace(BULLET_RE, "").replace(NUMBERED_RE, "").trim(); }
+
+// ─── Section detection ───────────────────────────────────────────────
+
+type SectionKey = "header" | "summary" | "skills" | "experience" | "education" | "projects" | "certifications" | "achievements" | "languages" | "interests";
+
+const SECTION_MAP: [RegExp, SectionKey][] = [
+  [/^(professional\s+)?(summary|objective|profile|about\s*me|career\s+objective|professional\s+profile)/i, "summary"],
+  [/^(technical\s+|core\s+|key\s+|relevant\s+|hard\s+|soft\s+)?skills?(\s+&\s+\w+)?$|^competenc|^expertise|^technologies|^tools?\s*&|^programming/i, "skills"],
+  [/^(work\s+|professional\s+|relevant\s+)?experience|^employment(\s+history)?|^work\s+history|^career\s+history|^internship/i, "experience"],
+  [/^education(al)?(\s+background|\s+qualification)?$|^academic(\s+background)?$|^qualification/i, "education"],
+  [/^(personal\s+|key\s+|academic\s+|notable\s+)?projects?(\s+&\s+\w+)?$/i, "projects"],
+  [/^certif(ications?|icates?)|^licenses?(\s+&\s+certif)?|^professional\s+certif/i, "certifications"],
+  [/^(key\s+)?achievements?|^accomplishments?|^awards?\s*(&\s*honors?)?|^honors?/i, "achievements"],
+  [/^languages?$/i, "languages"],
+  [/^interests?|^hobbies|^activities/i, "interests"],
 ];
 
-// ─── Contact regex helpers ──────────────────────────────────────────
-const EMAIL_RE = /[\w.+-]+@[\w.-]+\.\w{2,}/;
-const PHONE_RE = /(?:\+?\d{1,3}[\s-]?)?\(?\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{3,4}/;
-const LINKEDIN_RE = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[\w\-]+/i;
-const LOCATION_RE = /([A-Z][a-zA-Z\s]+,\s*[A-Z]{2}(?:\s+\d{5})?)/;
-
-function detectSection(line: string): Section | null {
-  const cleaned = line.replace(/^[\s\-–—:_*#|]+/, "").replace(/[\s\-–—:_*#|]+$/, "").trim();
-  if (cleaned.length === 0 || cleaned.length > 60) return null;
-  for (const [pattern, section] of SECTION_PATTERNS) {
-    if (pattern.test(cleaned)) return section;
+function detectSection(line: string): SectionKey | null {
+  // Strip decorators: dashes, underscores, colons, asterisks, pipes
+  const cleaned = line
+    .replace(/^[\s\-–—=_*#|▬▪►◆]+/, "")
+    .replace(/[\s\-–—=_*#|▬▪►◆:]+$/, "")
+    .trim();
+  if (!cleaned || cleaned.length > 70) return null;
+  // Must be mostly uppercase or title-case (section headers usually are)
+  const words = cleaned.split(/\s+/);
+  const upperCount = words.filter(w => w[0] === w[0]?.toUpperCase()).length;
+  if (upperCount < words.length * 0.5 && cleaned.length > 20) return null;
+  for (const [pattern, key] of SECTION_MAP) {
+    if (pattern.test(cleaned)) return key;
   }
   return null;
 }
 
-function isBulletLine(line: string): boolean {
-  return /^[•\-*▪▸◦›‣⁃→➤✓✔☑]\s*/.test(line) || /^\d+[.)]\s/.test(line);
-}
-
-function cleanBullet(line: string): string {
-  return line.replace(/^[•\-*▪▸◦›‣⁃→➤✓✔☑]\s*/, "").replace(/^\d+[.)]\s*/, "").trim();
-}
-
-const DATE_RE = /\b(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?|\d{1,2}\/\d{2,4}|\d{4})\b.*\b(\d{4}|present|current|ongoing|till\s+date|now)\b/i;
+// ─── Contact line detection ──────────────────────────────────────────
 
 function isContactLine(line: string): boolean {
   const l = line.trim();
-  // Pure email/phone/linkedin lines
-  if (EMAIL_RE.test(l) && l.replace(EMAIL_RE, "").replace(/[|•·,\s\-–—]/g, "").length < 5) return true;
+  if (EMAIL_RE.test(l) && l.replace(EMAIL_RE, "").replace(/[|•·,\s\-–—()/]/g, "").length < 8) return true;
   if (LINKEDIN_RE.test(l)) return true;
-  // Lines with multiple contact items mixed together
-  let contactParts = 0;
-  if (EMAIL_RE.test(l)) contactParts++;
-  if (PHONE_RE.test(l)) contactParts++;
-  if (LOCATION_RE.test(l)) contactParts++;
-  if (contactParts >= 2) return true;
-  return false;
+  if (GITHUB_RE.test(l)) return true;
+  let hits = 0;
+  if (EMAIL_RE.test(l)) hits++;
+  if (PHONE_RE.test(l)) hits++;
+  if (LOCATION_RE.test(l)) hits++;
+  if (LINKEDIN_RE.test(l)) hits++;
+  return hits >= 2;
 }
 
-// ─── Main parser ────────────────────────────────────────────────────
-export function parseResumeText(text: string): ResumeData {
-  // Normalize text: handle cases where PDF gives one big blob
-  let normalizedText = text;
-  
-  // If text has very few newlines relative to its length, try to split on double spaces or common patterns
-  const lineCount = text.split(/\r?\n/).filter(l => l.trim()).length;
-  if (lineCount <= 3 && text.length > 200) {
-    // Likely a single-blob PDF extraction — try to split on section keywords
-    normalizedText = text
-      .replace(/(summary|objective|profile|skills|experience|education|projects?|certif)/gi, "\n$1")
+// ─── Main parser ─────────────────────────────────────────────────────
+
+export function parseResumeText(rawText: string): ResumeData {
+  // ── Pre-process ──────────────────────────────────────────────
+  let text = rawText;
+
+  // Fix common PDF artifacts: remove null bytes, normalize dashes
+  text = text.replace(/\0/g, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  // If very few newlines (blob PDF), inject breaks before section keywords
+  const lineCount = text.split("\n").filter(l => l.trim()).length;
+  if (lineCount <= 5 && text.length > 300) {
+    text = text
+      .replace(/\s+(summary|objective|profile|skills?|experience|employment|education|projects?|certif|achievements?|languages?)/gi, "\n$1")
       .replace(/([.!?])\s+([A-Z])/g, "$1\n$2");
   }
 
-  const rawLines = normalizedText.split(/\r?\n/).map((l) => l.trim());
+  // Normalize multiple blank lines to single
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  const rawLines = text.split("\n").map(l => l.trim());
   const lines = rawLines.filter(Boolean);
+
   const data: ResumeData = { ...emptyResume, experiences: [], projects: [], education: [] };
+  if (!lines.length) return data;
 
-  if (lines.length === 0) return data;
-
-  // ── Step 1: Extract contact info ──────────────────────────────
-  const contactLineIdx = new Set<number>();
+  // ── Step 1: Extract contact info (scan ALL lines) ─────────────
+  const usedIdx = new Set<number>();
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+
     if (!data.email) {
       const m = line.match(EMAIL_RE);
-      if (m) { data.email = m[0]; contactLineIdx.add(i); }
+      if (m) { data.email = m[0].trim(); usedIdx.add(i); }
     }
     if (!data.phone) {
       const m = line.match(PHONE_RE);
-      if (m && m[0].replace(/\D/g, "").length >= 10) { data.phone = m[0].trim(); contactLineIdx.add(i); }
+      if (m && m[0].replace(/\D/g, "").length >= 7) {
+        data.phone = m[0].trim();
+        usedIdx.add(i);
+      }
     }
     if (!data.linkedin) {
       const m = line.match(LINKEDIN_RE);
-      if (m) { data.linkedin = m[0]; contactLineIdx.add(i); }
+      if (m) { data.linkedin = m[0].trim(); usedIdx.add(i); }
     }
     if (!data.location) {
       const m = line.match(LOCATION_RE);
-      if (m) { data.location = m[1]; contactLineIdx.add(i); }
+      if (m) { data.location = m[1].trim(); usedIdx.add(i); }
     }
   }
 
-  // ── Step 2: Extract name (FIRST few lines, skip contact/section headers) ──
-  for (let i = 0; i < Math.min(8, lines.length); i++) {
+  // ── Step 2: Extract name ──────────────────────────────────────
+  // Name is usually the first non-contact, non-section-header line
+  for (let i = 0; i < Math.min(10, lines.length); i++) {
     const line = lines[i];
-    // Skip section headers
     if (detectSection(line)) continue;
-    // Skip pure contact lines
-    if (isContactLine(line)) continue;
-    // Strip out any embedded contact info
+    if (isContactLine(line)) { usedIdx.add(i); continue; }
+
+    // Strip embedded contact info
     let candidate = line
       .replace(EMAIL_RE, "")
       .replace(PHONE_RE, "")
       .replace(LINKEDIN_RE, "")
+      .replace(GITHUB_RE, "")
+      .replace(URL_RE, "")
       .replace(LOCATION_RE, "")
-      .replace(/[|•·,\-–—:]/g, " ")
+      .replace(/[|•·,\-–—:/\\]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
 
-    // Name should be short, mostly letters
-    if (candidate.length >= 2 && candidate.length <= 50) {
-      const isNameLike = /^[A-Za-z\s.'\-]+$/.test(candidate);
-      const wordCount = candidate.split(/\s+/).length;
-      if (isNameLike && wordCount >= 1 && wordCount <= 5) {
+    if (candidate.length >= 2 && candidate.length <= 55) {
+      const isNameLike = /^[A-Za-z\s.''\-]+$/.test(candidate);
+      const wc = candidate.split(/\s+/).length;
+      if (isNameLike && wc >= 1 && wc <= 6) {
         data.fullName = candidate;
-        contactLineIdx.add(i);
+        usedIdx.add(i);
         break;
       }
     }
   }
 
-  // If no name found, use first line trimmed to 50 chars as last resort
+  // Fallback name
   if (!data.fullName && lines.length > 0) {
-    let first = lines[0]
+    const first = lines[0]
       .replace(EMAIL_RE, "").replace(PHONE_RE, "").replace(LINKEDIN_RE, "")
-      .replace(/[|•·,\-–—:]/g, " ").replace(/\s+/g, " ").trim();
-    if (first.length > 50) first = first.slice(0, 50);
-    if (first.length > 0) {
-      data.fullName = first;
-      contactLineIdx.add(0);
-    }
+      .replace(/[|•·,\-–—:]/g, " ").replace(/\s+/g, " ").trim().slice(0, 55);
+    if (first) { data.fullName = first; usedIdx.add(0); }
   }
 
-  // ── Step 3: Split lines into sections ─────────────────────────
+  // ── Step 3: Section splitting ─────────────────────────────────
   const sections: Record<string, string[]> = {};
-  let currentSection: Section = "header";
+  let current: SectionKey = "header";
 
   for (let i = 0; i < lines.length; i++) {
-    if (contactLineIdx.has(i) && currentSection === "header") continue;
+    if (usedIdx.has(i) && current === "header") continue;
     const line = lines[i];
-    const detected = detectSection(line);
-    if (detected) {
-      currentSection = detected;
-      continue; // skip the header line itself
-    }
-    if (currentSection !== "header") {
-      if (!sections[currentSection]) sections[currentSection] = [];
-      sections[currentSection].push(line);
-    }
+    const sec = detectSection(line);
+    if (sec) { current = sec; continue; }
+    if (current === "header") continue;
+    if (!sections[current]) sections[current] = [];
+    sections[current].push(line);
   }
 
-  // ── Step 4: Populate summary ──────────────────────────────────
-  if (sections["summary"]?.length) {
-    data.summary = sections["summary"]
-      .map(l => cleanBullet(l))
+  // ── Step 4: Summary ───────────────────────────────────────────
+  if (sections.summary?.length) {
+    data.summary = sections.summary
+      .map(l => isBullet(l) ? stripBullet(l) : l)
       .join(" ")
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 600);
+      .slice(0, 800);
   }
 
-  // ── Step 5: Populate skills ───────────────────────────────────
-  if (sections["skills"]?.length) {
-    data.skills = sections["skills"]
-      .map(l => cleanBullet(l))
-      .join(", ")
-      .replace(/,\s*,/g, ",")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 600);
+  // ── Step 5: Skills ────────────────────────────────────────────
+  if (sections.skills?.length) {
+    // Skills can be comma-separated on one line, or one per line, or bullet list
+    const skillLines = sections.skills.map(l => isBullet(l) ? stripBullet(l) : l);
+    // If lines already contain commas, join with comma+space; else join with ", "
+    const joined = skillLines.join(", ").replace(/,\s*,/g, ",").replace(/\s+/g, " ").trim();
+    data.skills = joined.slice(0, 800);
   }
 
-  // ── Step 6: Populate certifications ───────────────────────────
-  if (sections["certifications"]?.length) {
-    data.certifications = sections["certifications"]
-      .map(l => cleanBullet(l))
+  // ── Step 6: Certifications ────────────────────────────────────
+  const certLines = [
+    ...(sections.certifications || []),
+    ...(sections.achievements || []),
+  ];
+  if (certLines.length) {
+    data.certifications = certLines
+      .map(l => isBullet(l) ? stripBullet(l) : l)
       .filter(Boolean)
       .join("\n")
-      .slice(0, 500);
+      .slice(0, 600);
   }
 
-  // ── Step 7: Parse experience ──────────────────────────────────
-  if (sections["experience"]?.length) {
-    data.experiences = parseExperiences(sections["experience"]);
+  // ── Step 7: Experience ────────────────────────────────────────
+  if (sections.experience?.length) {
+    data.experiences = parseExperiences(sections.experience);
   }
 
-  // ── Step 8: Parse projects ────────────────────────────────────
-  if (sections["projects"]?.length) {
-    data.projects = parseProjects(sections["projects"]);
+  // ── Step 8: Projects ──────────────────────────────────────────
+  if (sections.projects?.length) {
+    data.projects = parseProjects(sections.projects);
   }
 
-  // ── Step 9: Parse education ───────────────────────────────────
-  if (sections["education"]?.length) {
-    data.education = parseEducation(sections["education"]);
+  // ── Step 9: Education ─────────────────────────────────────────
+  if (sections.education?.length) {
+    data.education = parseEducation(sections.education);
   }
 
-  // ── Step 10: Fallback — if no sections detected, distribute text ──
-  if (!data.summary && !data.skills && data.experiences.length === 0 && data.education.length === 0) {
-    const bodyLines = lines.filter((_, i) => !contactLineIdx.has(i) && lines[i] !== data.fullName);
-    if (bodyLines.length > 0) {
-      // Try to at least put some text in summary
-      data.summary = bodyLines.slice(0, 5).join(" ").replace(/\s+/g, " ").trim().slice(0, 500);
-      if (bodyLines.length > 5) {
-        data.skills = bodyLines.slice(5, 10).join(", ").slice(0, 300);
-      }
+  // ── Step 10: Languages → append to skills ────────────────────
+  if (sections.languages?.length) {
+    const langs = sections.languages.map(l => isBullet(l) ? stripBullet(l) : l).join(", ");
+    if (langs.trim()) {
+      data.skills = data.skills
+        ? `${data.skills}, ${langs}`.slice(0, 800)
+        : langs.slice(0, 800);
+    }
+  }
+
+  // ── Step 11: Fallback if nothing parsed ──────────────────────
+  if (!data.summary && !data.skills && !data.experiences.length && !data.education.length) {
+    const body = lines.filter((_, i) => !usedIdx.has(i));
+    if (body.length) {
+      data.summary = body.slice(0, 6).join(" ").replace(/\s+/g, " ").trim().slice(0, 600);
+      if (body.length > 6) data.skills = body.slice(6, 12).join(", ").slice(0, 400);
     }
   }
 
   return data;
 }
 
-// ─── Experience parser ──────────────────────────────────────────────
+// ─── Experience parser ────────────────────────────────────────────────
+
 function parseExperiences(lines: string[]) {
-  const entries: { title: string; company: string; location: string; dates: string; bullets: string[] }[] = [];
-  let current: typeof entries[0] | null = null;
+  type Entry = { title: string; company: string; location: string; dates: string; bullets: string[] };
+  const entries: Entry[] = [];
+  let cur: Entry | null = null;
+
+  const flush = () => {
+    if (cur && (cur.title || cur.company || cur.bullets.length)) entries.push(cur);
+  };
 
   for (const line of lines) {
-    const bullet = isBulletLine(line);
+    const bullet = isBullet(line);
     const hasDate = DATE_RE.test(line);
 
     if (bullet) {
-      if (current) current.bullets.push(cleanBullet(line));
-    } else if (hasDate) {
-      if (current) {
-        if (!current.dates) {
-          current.dates = line.trim();
+      // Bullet point → add to current entry
+      if (!cur) cur = { title: "", company: "", location: "", dates: "", bullets: [] };
+      cur.bullets.push(stripBullet(line));
+      continue;
+    }
+
+    if (hasDate) {
+      if (cur) {
+        if (!cur.dates) {
+          // Date line for current entry
+          cur.dates = line.trim();
         } else {
-          // New entry with date
-          entries.push(current);
-          current = { title: line.trim(), company: "", location: "", dates: "", bullets: [] };
+          // New entry starting with a date line
+          flush();
+          cur = { title: "", company: "", location: "", dates: line.trim(), bullets: [] };
         }
       } else {
-        current = { title: "", company: "", location: "", dates: line.trim(), bullets: [] };
+        cur = { title: "", company: "", location: "", dates: line.trim(), bullets: [] };
       }
-    } else if (line.length < 100 && !bullet) {
-      // Likely a title/company line
-      if (current && (current.title || current.bullets.length > 0)) {
-        entries.push(current);
-      }
+      continue;
+    }
 
-      let title = line;
-      let company = "";
-      let location = "";
-
-      // Split "Title | Company" or "Title at Company" or "Title — Company"
-      const separators = [/\s+at\s+/i, /\s*[|]\s*/, /\s*[–—]\s+/];
-      for (const sep of separators) {
-        if (sep.test(line)) {
-          const parts = line.split(sep);
-          title = parts[0].trim();
-          company = parts.slice(1).join(" ").trim();
-          break;
+    // Non-bullet, non-date line → title or company
+    if (line.length <= 120) {
+      if (cur && (cur.title || cur.bullets.length > 0)) {
+        // Check if this looks like a new job title (not a continuation)
+        const looksLikeTitle = /^[A-Z]/.test(line) && !line.endsWith(",");
+        if (looksLikeTitle && cur.title) {
+          flush();
+          cur = null;
         }
       }
 
-      // Try extracting location from company
-      const locMatch = company.match(/,\s*([A-Z][a-zA-Z\s]+,\s*[A-Z]{2})$/);
-      if (locMatch) {
-        location = locMatch[1];
-        company = company.replace(locMatch[0], "").trim();
+      if (!cur) {
+        cur = { title: "", company: "", location: "", dates: "", bullets: [] };
       }
 
-      current = { title, company, location, dates: "", bullets: [] };
-    } else if (current) {
-      current.bullets.push(line.trim());
+      if (!cur.title) {
+        // Try to split "Title | Company" or "Title at Company" or "Title, Company"
+        let title = line, company = "", location = "";
+        const sepMatch = line.match(/^(.+?)\s*(?:\||–|—|,\s+(?=[A-Z])|\s+at\s+)\s*(.+)$/i);
+        if (sepMatch) {
+          title = sepMatch[1].trim();
+          company = sepMatch[2].trim();
+          // Extract location from company if present
+          const locM = company.match(/,\s*([A-Z][a-zA-Z\s]+,\s*[A-Z]{2,})$/);
+          if (locM) { location = locM[1]; company = company.replace(locM[0], "").trim(); }
+        }
+        cur.title = title;
+        cur.company = company;
+        cur.location = location;
+      } else if (!cur.company) {
+        // Second line after title → company name
+        cur.company = line.trim();
+      } else {
+        // Extra line → treat as bullet
+        cur.bullets.push(line.trim());
+      }
+    } else {
+      // Long line → treat as bullet/description
+      if (!cur) cur = { title: "", company: "", location: "", dates: "", bullets: [] };
+      cur.bullets.push(line.trim());
     }
   }
-  if (current && (current.title || current.bullets.length > 0)) {
-    entries.push(current);
-  }
+  flush();
 
-  return entries.slice(0, 6).map((e, i) => ({
+  return entries.slice(0, 8).map((e, i) => ({
     id: String(i + 1),
     title: e.title,
     company: e.company,
@@ -351,27 +405,29 @@ function parseExperiences(lines: string[]) {
   }));
 }
 
-// ─── Projects parser ────────────────────────────────────────────────
+// ─── Projects parser ──────────────────────────────────────────────────
+
 function parseProjects(lines: string[]) {
-  const entries: { name: string; description: string; bullets: string[] }[] = [];
-  let current: typeof entries[0] | null = null;
+  type Entry = { name: string; description: string; bullets: string[] };
+  const entries: Entry[] = [];
+  let cur: Entry | null = null;
 
   for (const line of lines) {
-    if (isBulletLine(line)) {
-      if (current) current.bullets.push(cleanBullet(line));
-    } else if (line.length < 80) {
-      if (current) entries.push(current);
-      current = { name: line.trim(), description: "", bullets: [] };
+    if (isBullet(line)) {
+      if (!cur) cur = { name: "", description: "", bullets: [] };
+      cur.bullets.push(stripBullet(line));
+    } else if (line.length <= 100) {
+      if (cur) entries.push(cur);
+      cur = { name: line.trim(), description: "", bullets: [] };
     } else {
-      if (current) {
-        if (!current.description) current.description = line.trim();
-        else current.bullets.push(line.trim());
-      }
+      if (!cur) cur = { name: "", description: "", bullets: [] };
+      if (!cur.description) cur.description = line.trim();
+      else cur.bullets.push(line.trim());
     }
   }
-  if (current) entries.push(current);
+  if (cur) entries.push(cur);
 
-  return entries.slice(0, 4).map((p, i) => ({
+  return entries.slice(0, 6).map((p, i) => ({
     id: String(i + 1),
     name: p.name,
     description: p.description,
@@ -379,34 +435,52 @@ function parseProjects(lines: string[]) {
   }));
 }
 
-// ─── Education parser ───────────────────────────────────────────────
+// ─── Education parser ─────────────────────────────────────────────────
+
 function parseEducation(lines: string[]) {
-  const entries: { degree: string; school: string; dates: string; details: string[] }[] = [];
-  let current: typeof entries[0] | null = null;
-  const DEGREE_RE = /\b(b\.?s\.?|b\.?a\.?|b\.?e\.?|b\.?tech|m\.?s\.?|m\.?a\.?|m\.?tech|m\.?b\.?a|ph\.?d|bachelor|master|associate|diploma|certificate|doctor|engineering)\b/i;
+  type Entry = { degree: string; school: string; dates: string; details: string[] };
+  const entries: Entry[] = [];
+  let cur: Entry | null = null;
 
   for (const line of lines) {
-    if (isBulletLine(line)) {
-      if (current) current.details.push(cleanBullet(line));
-    } else if (DATE_RE.test(line) && current && !current.dates) {
-      current.dates = line.trim();
-    } else if (line.length < 120 && !isBulletLine(line)) {
-      if (current) entries.push(current);
+    if (isBullet(line)) {
+      if (cur) cur.details.push(stripBullet(line));
+      continue;
+    }
+
+    if (DATE_RE.test(line)) {
+      if (cur && !cur.dates) { cur.dates = line.trim(); continue; }
+    }
+
+    if (line.length <= 150) {
       const hasDegree = DEGREE_RE.test(line);
-      current = {
-        degree: hasDegree ? line.trim() : "",
-        school: hasDegree ? "" : line.trim(),
-        dates: "",
-        details: [],
-      };
-    } else if (current) {
-      if (!current.school) current.school = line.trim();
-      else current.details.push(line.trim());
+      const hasDate = DATE_RE.test(line);
+
+      if (hasDegree) {
+        if (cur) entries.push(cur);
+        // Try to split "Degree, School" or "Degree — School"
+        let degree = line, school = "";
+        const sepM = line.match(/^(.+?)\s*(?:,|–|—|\|)\s*(.+)$/);
+        if (sepM && !DEGREE_RE.test(sepM[2])) {
+          degree = sepM[1].trim();
+          school = sepM[2].trim();
+        }
+        cur = { degree, school, dates: "", details: [] };
+      } else if (hasDate && cur && !cur.dates) {
+        cur.dates = line.trim();
+      } else if (cur) {
+        if (!cur.school) cur.school = line.trim();
+        else cur.details.push(line.trim());
+      } else {
+        cur = { degree: "", school: line.trim(), dates: "", details: [] };
+      }
+    } else if (cur) {
+      cur.details.push(line.trim());
     }
   }
-  if (current) entries.push(current);
+  if (cur) entries.push(cur);
 
-  // Post-process: if degree is empty but school has degree-like text, swap
+  // Post-process: swap degree/school if misdetected
   for (const e of entries) {
     if (!e.degree && DEGREE_RE.test(e.school)) {
       e.degree = e.school;

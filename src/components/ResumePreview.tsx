@@ -21,6 +21,12 @@ const ResumePreview = ({ data, template = "classic" }: ResumePreviewProps) => {
   if (template === "executive")     return <ExecutiveTemplate {...props} />;
   if (template === "compact")       return <CompactTemplate {...props} />;
   if (template === "elegant")       return <ElegantTemplate {...props} />;
+  if (template === "navy")          return <NavyTemplate {...props} />;
+  if (template === "slate")         return <SlateTemplate {...props} />;
+  if (template === "crisp")         return <CrispTemplate {...props} />;
+  if (template === "impact")        return <ImpactTemplate {...props} />;
+  if (template === "clean")         return <CleanTemplate {...props} />;
+  if (template === "sharp")         return <SharpTemplate {...props} />;
   return <ClassicTemplate {...props} />;
 };
 
@@ -534,6 +540,145 @@ function ElegantTemplate({ data, contactParts, hasSummary, hasSkills, hasExperie
         </Section>
       )}
       {hasCertifications && <Section title="Certifications & Awards" color={accent} style="elegant"><BulletList text={data.certifications} marker="–" /></Section>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   NAVY TEMPLATE  (Experienced — dark navy header)
+   ═══════════════════════════════════════════ */
+function NavyTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#0f2d5e";
+  return (
+    <div className="resume-page w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Arial, Helvetica, sans-serif", padding: 0 }}>
+      <div style={{ background: accent, padding: "26px 36px 18px", color: "#fff" }}>
+        {data.fullName && <h1 style={{ fontSize: "22pt", margin: 0, fontWeight: 700, letterSpacing: "0.03em" }}>{data.fullName}</h1>}
+        {contactParts.length > 0 && <p style={{ fontSize: "9.5pt", marginTop: "5px", opacity: 0.8 }}>{contactParts.join("  |  ")}</p>}
+      </div>
+      <div style={{ padding: "22px 36px" }}>
+        {hasSummary && <Section title="Professional Summary" color={accent} style="bold"><p>{data.summary}</p></Section>}
+        {hasSkills && <Section title="Core Skills" color={accent} style="bold"><p>{data.skills}</p></Section>}
+        {hasExperiences && <Section title="Work Experience" color={accent} style="bold">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+        {hasProjects && <Section title="Projects" color={accent} style="bold">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+        {hasEducation && <Section title="Education" color={accent} style="bold">{data.education.map(e => <EducationBlock key={e.id} edu={e} />)}</Section>}
+        {hasCertifications && <Section title="Certifications" color={accent} style="bold"><BulletList text={data.certifications} /></Section>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   SLATE TEMPLATE  (Experienced — left gray sidebar)
+   ═══════════════════════════════════════════ */
+function SlateTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#334155";
+  return (
+    <div className="resume-page w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border flex" style={{ fontFamily: "Arial, Helvetica, sans-serif", padding: 0 }}>
+      <div style={{ width: "190px", background: "#f1f5f9", padding: "28px 16px", flexShrink: 0, borderRight: "1px solid #e2e8f0" }}>
+        {data.fullName && <h1 style={{ fontSize: "13pt", color: accent, fontWeight: 800, marginBottom: "5px", lineHeight: 1.2 }}>{data.fullName}</h1>}
+        {contactParts.length > 0 && <div style={{ fontSize: "8pt", color: "#64748b", marginBottom: "14px", lineHeight: 1.8 }}>{contactParts.map((c, i) => <div key={i}>{c}</div>)}</div>}
+        {hasSkills && <div style={{ marginBottom: "12px" }}><h2 style={{ fontSize: "9pt", color: accent, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700, marginBottom: "5px" }}>Skills</h2><p style={{ fontSize: "8.5pt", color: "#475569", lineHeight: 1.6 }}>{data.skills}</p></div>}
+        {hasEducation && <div><h2 style={{ fontSize: "9pt", color: accent, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700, marginBottom: "5px" }}>Education</h2>{data.education.map(e => <div key={e.id} style={{ marginBottom: "8px", fontSize: "8.5pt", color: "#475569" }}><div style={{ fontWeight: 700 }}>{e.degree}</div><div>{e.school}</div><div style={{ color: "#94a3b8" }}>{e.dates}</div></div>)}</div>}
+        {hasCertifications && <div style={{ marginTop: "12px" }}><h2 style={{ fontSize: "9pt", color: accent, textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700, marginBottom: "5px" }}>Certifications</h2><p style={{ fontSize: "8.5pt", color: "#475569", lineHeight: 1.6 }}>{data.certifications}</p></div>}
+      </div>
+      <div style={{ flex: 1, padding: "28px 26px" }}>
+        {hasSummary && <Section title="Summary" color={accent} style="executive"><p>{data.summary}</p></Section>}
+        {hasExperiences && <Section title="Experience" color={accent} style="executive">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+        {hasProjects && <Section title="Projects" color={accent} style="executive">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   CRISP TEMPLATE  (Experienced — clean lines)
+   ═══════════════════════════════════════════ */
+function CrispTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#1d4ed8";
+  return (
+    <div className="resume-page p-[38px] w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      {data.fullName && (
+        <div style={{ marginBottom: "12px" }}>
+          <h1 style={{ fontSize: "22pt", color: "#111", fontWeight: 800, margin: 0 }}>{data.fullName}</h1>
+          {contactParts.length > 0 && <p style={{ fontSize: "9.5pt", color: "#6b7280", marginTop: "4px" }}>{contactParts.join("  ·  ")}</p>}
+          <div style={{ height: "3px", background: `linear-gradient(90deg, ${accent}, ${accent}44)`, marginTop: "8px", borderRadius: "2px" }} />
+        </div>
+      )}
+      {hasSummary && <Section title="Summary" color={accent} style="compact"><p>{data.summary}</p></Section>}
+      {hasSkills && <Section title="Skills" color={accent} style="compact"><p>{data.skills}</p></Section>}
+      {hasExperiences && <Section title="Experience" color={accent} style="compact">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+      {hasProjects && <Section title="Projects" color={accent} style="compact">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+      {hasEducation && <Section title="Education" color={accent} style="compact">{data.education.map(e => <EducationBlock key={e.id} edu={e} />)}</Section>}
+      {hasCertifications && <Section title="Certifications" color={accent} style="compact"><BulletList text={data.certifications} /></Section>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   IMPACT TEMPLATE  (Fresher — bold orange accent)
+   ═══════════════════════════════════════════ */
+function ImpactTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#ea580c";
+  return (
+    <div className="resume-page p-[36px] w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      {data.fullName && (
+        <div style={{ borderLeft: `5px solid ${accent}`, paddingLeft: "14px", marginBottom: "14px" }}>
+          <h1 style={{ fontSize: "21pt", color: "#111", fontWeight: 800, margin: 0 }}>{data.fullName}</h1>
+          {contactParts.length > 0 && <p style={{ fontSize: "9.5pt", color: "#6b7280", marginTop: "3px" }}>{contactParts.join("  |  ")}</p>}
+        </div>
+      )}
+      {hasSummary && <Section title="Objective" color={accent} style="bold"><p>{data.summary}</p></Section>}
+      {hasSkills && <Section title="Skills" color={accent} style="bold"><p>{data.skills}</p></Section>}
+      {hasEducation && <Section title="Education" color={accent} style="bold">{data.education.map(e => <EducationBlock key={e.id} edu={e} />)}</Section>}
+      {hasProjects && <Section title="Projects" color={accent} style="bold">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+      {hasExperiences && <Section title="Experience" color={accent} style="bold">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+      {hasCertifications && <Section title="Certifications" color={accent} style="bold"><BulletList text={data.certifications} /></Section>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   CLEAN TEMPLATE  (Fresher — teal top bar)
+   ═══════════════════════════════════════════ */
+function CleanTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#0d9488";
+  return (
+    <div className="resume-page w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border" style={{ fontFamily: "Arial, Helvetica, sans-serif", padding: 0 }}>
+      <div style={{ background: accent, padding: "20px 36px 14px" }}>
+        {data.fullName && <h1 style={{ fontSize: "21pt", color: "#fff", fontWeight: 700, margin: 0 }}>{data.fullName}</h1>}
+        {contactParts.length > 0 && <p style={{ fontSize: "9pt", color: "rgba(255,255,255,0.85)", marginTop: "4px" }}>{contactParts.join("  ·  ")}</p>}
+      </div>
+      <div style={{ padding: "20px 36px" }}>
+        {hasSummary && <Section title="About Me" color={accent} style="compact"><p>{data.summary}</p></Section>}
+        {hasSkills && <Section title="Skills" color={accent} style="compact"><p>{data.skills}</p></Section>}
+        {hasEducation && <Section title="Education" color={accent} style="compact">{data.education.map(e => <EducationBlock key={e.id} edu={e} />)}</Section>}
+        {hasProjects && <Section title="Projects" color={accent} style="compact">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+        {hasExperiences && <Section title="Experience" color={accent} style="compact">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+        {hasCertifications && <Section title="Certifications" color={accent} style="compact"><BulletList text={data.certifications} /></Section>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   SHARP TEMPLATE  (Fresher — dark sidebar left)
+   ═══════════════════════════════════════════ */
+function SharpTemplate({ data, contactParts, hasSummary, hasSkills, hasExperiences, hasProjects, hasEducation, hasCertifications }: TemplateProps) {
+  const accent = "#312e81";
+  return (
+    <div className="resume-page w-full max-w-[210mm] mx-auto min-h-[297mm] shadow-lg border border-border flex" style={{ fontFamily: "Arial, Helvetica, sans-serif", padding: 0 }}>
+      <div style={{ width: "180px", background: accent, padding: "28px 14px", flexShrink: 0, color: "#fff" }}>
+        {data.fullName && <h1 style={{ fontSize: "12pt", fontWeight: 800, marginBottom: "6px", lineHeight: 1.2, color: "#fff" }}>{data.fullName}</h1>}
+        {contactParts.length > 0 && <div style={{ fontSize: "7.5pt", opacity: 0.8, marginBottom: "14px", lineHeight: 1.8 }}>{contactParts.map((c, i) => <div key={i}>{c}</div>)}</div>}
+        {hasSkills && <div style={{ marginBottom: "12px" }}><h2 style={{ fontSize: "8.5pt", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: "5px", color: "#c7d2fe" }}>Skills</h2><p style={{ fontSize: "8pt", opacity: 0.85, lineHeight: 1.6 }}>{data.skills}</p></div>}
+        {hasEducation && <div><h2 style={{ fontSize: "8.5pt", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: "5px", color: "#c7d2fe" }}>Education</h2>{data.education.map(e => <div key={e.id} style={{ marginBottom: "8px", fontSize: "8pt", opacity: 0.85 }}><div style={{ fontWeight: 700 }}>{e.degree}</div><div>{e.school}</div><div style={{ opacity: 0.7 }}>{e.dates}</div></div>)}</div>}
+      </div>
+      <div style={{ flex: 1, padding: "28px 24px" }}>
+        {hasSummary && <Section title="Objective" color={accent} style="executive"><p>{data.summary}</p></Section>}
+        {hasProjects && <Section title="Projects" color={accent} style="executive">{data.projects.map(p => <div key={p.id} className="mb-2"><span className="font-bold">{p.name}</span>{p.description && <span> — {p.description}</span>}{p.bullets.trim() && <BulletList text={p.bullets} />}</div>)}</Section>}
+        {hasExperiences && <Section title="Experience" color={accent} style="executive">{data.experiences.map(e => <ExperienceBlock key={e.id} exp={e} />)}</Section>}
+        {hasCertifications && <Section title="Certifications" color={accent} style="executive"><BulletList text={data.certifications} /></Section>}
+      </div>
     </div>
   );
 }
