@@ -99,10 +99,40 @@ const Landing = () => {
   return (
     <>
       <SEO
-        title="Free ATS Resume Checker & Builder (2026) — Improve Your Score Instantly | FreeATS"
-        description="Free ATS resume checker and builder. Get an instant ATS compatibility score, keyword analysis, and actionable suggestions. No sign-up required. 100% free."
+        title="Free ATS Resume Checker & Builder (2026) — Instant Score | FreeATS"
+        description="Free ATS resume checker and builder. Upload your resume (PDF, DOCX, TXT) and get an instant ATS compatibility score, keyword gap analysis, and actionable tips to pass applicant tracking systems. No sign-up. 100% free."
         canonical="/"
+        keywords="free ATS resume checker, ATS resume score, check resume ATS, free resume builder, ATS friendly resume builder, resume keyword checker free, applicant tracking system checker, resume scanner free, ATS score checker online, free CV checker, resume optimizer free, ATS resume test, resume checker no sign up, best free ATS checker 2026, resume ATS score online"
       />
+
+      {/* SEO: keyword-rich descriptive text for crawlers */}
+      <section className="sr-only" aria-hidden="true">
+        <h2>Free ATS Resume Checker — No Sign Up Required</h2>
+        <p>
+          FreeATS is a free ATS resume checker and resume builder that helps job seekers check their
+          ATS score instantly. Upload your resume in PDF, DOCX, or TXT format and get a detailed
+          ATS compatibility score with keyword gap analysis, formatting issues, and actionable
+          improvement suggestions — all for free, with no account required.
+        </p>
+        <p>
+          Our free resume checker analyzes your resume against 5 key criteria used by applicant
+          tracking systems: section completeness, keyword match, formatting quality, quantified
+          achievements, and action verb usage. Paste a job description to see exactly which keywords
+          are missing from your resume.
+        </p>
+        <p>
+          Build an ATS-friendly resume from scratch using our free resume builder. Choose from 3
+          ATS-optimized templates — Classic, Modern, and Minimal — and download your resume as a
+          PDF. No watermarks, no fees, no sign-up.
+        </p>
+        <p>
+          Keywords: free ATS resume checker, ATS score checker online, resume builder free no sign up,
+          check resume ATS score, ATS friendly resume builder, resume keyword checker free,
+          applicant tracking system resume checker, free CV checker online, resume scanner free,
+          ATS resume score checker, how to pass ATS, improve ATS score, free resume optimizer,
+          ATS compatible resume template, resume checker online free 2026.
+        </p>
+      </section>
 
       {/* Hero */}
       <section id="upload-section" className="relative overflow-hidden">

@@ -44,9 +44,15 @@ const BlogPost = () => {
   return (
     <>
       <SEO
-        title={post.title} description={post.description} canonical={`/blog/${post.slug}`}
-        ogType="article" author={post.author} publishedDate={post.date}
-        keywords={`${post.category}, ATS resume, resume tips, ${post.title.toLowerCase()}`}
+        title={post.title}
+        description={post.description}
+        canonical={`/blog/${post.slug}`}
+        ogType="article"
+        author={post.author}
+        publishedDate={post.date}
+        modifiedDate="2026-05-01"
+        category={post.category}
+        keywords={`${post.category}, ATS resume, free ATS checker, resume tips, ${post.title.toLowerCase()}, resume optimization, applicant tracking system, free resume builder`}
       />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">
         <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
