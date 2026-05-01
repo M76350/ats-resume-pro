@@ -162,10 +162,23 @@ const Templates = () => {
   const [uploading, setUploading] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
 
+  // Check if user came from Landing with an already-uploaded resume
+  const hasImportedResume = !!sessionStorage.getItem("importedResume");
+  const flowType = sessionStorage.getItem("flowType") || "create";
+  const isImproveFlow = flowType === "improve" && hasImportedResume;
+
   const handleSelect = (templateId: string) => {
     setSelected(templateId);
     sessionStorage.setItem("selectedTemplate", templateId);
-    setShowModal(true);
+
+    if (isImproveFlow) {
+      // Resume already uploaded from Landing — skip modal, go straight to editor
+      setGlobalLoading(true);
+      setTimeout(() => navigate("/editor"), 800);
+    } else {
+      // Fresh visit to /templates — show Upload or Create modal
+      setShowModal(true);
+    }
   };
 
   const handleUpload = useCallback(async (file: File) => {
@@ -231,11 +244,19 @@ const Templates = () => {
             <Sparkles className="w-3 h-3 mr-1" /> 6 Templates — All ATS Optimized
           </Badge>
           <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
-            Choose Your Resume Template
+            {isImproveFlow ? "Choose a Template for Your Resume" : "Choose Your Resume Template"}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm leading-relaxed">
-            All templates are ATS-compatible, single-column, and print-ready. Select a template, then upload your existing resume or build from scratch.
+            {isImproveFlow
+              ? "Your resume has been uploaded. Pick a template and we'll open it in the editor with your data pre-filled."
+              : "All templates are ATS-compatible, single-column, and print-ready. Select a template, then upload your existing resume or build from scratch."
+            }
           </p>
+          {isImproveFlow && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs font-medium px-4 py-2 rounded-full">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Resume uploaded — just pick a template to continue
+            </div>
+          )}
         </div>
 
         {/* Tab switcher */}

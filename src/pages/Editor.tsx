@@ -21,12 +21,13 @@ const Editor = () => {
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     const imported = sessionStorage.getItem("importedResume");
     if (imported) {
-      sessionStorage.removeItem("importedResume");
-      try { return JSON.parse(imported); } catch { /* fall through */ }
-    }
-    const flowType = sessionStorage.getItem("flowType");
-    if (flowType === "create") {
-      return emptyResume;
+      // Don't remove yet — keep in sessionStorage until we confirm it loaded
+      try {
+        const parsed = JSON.parse(imported);
+        // Now safe to remove
+        sessionStorage.removeItem("importedResume");
+        return parsed;
+      } catch { /* fall through */ }
     }
     return emptyResume;
   });
