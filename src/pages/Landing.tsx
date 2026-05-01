@@ -139,24 +139,24 @@ const Landing = () => {
       <section id="upload-section" className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center relative">
-          <Badge variant="secondary" className="mb-4 text-xs font-medium px-3 py-1">
+          <Badge variant="secondary" className="mb-4 text-xs font-medium px-3 py-1 animate-fade-in">
             <Sparkles className="w-3 h-3 mr-1" /> 100% Free — No Sign Up Required
           </Badge>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight tracking-tight mb-5">
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight tracking-tight mb-5 animate-fade-in-up">
             Free ATS Resume Checker<br className="hidden sm:block" />
             <span className="text-primary"> for Freshers & Job Seekers</span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 animate-fade-in-up-delay-1">
             Upload your resume and get an instant ATS compatibility score — with keyword gap analysis, format check, and actionable tips to pass systems like Workday, Greenhouse, and Lever.
           </p>
-          <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-10">
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-10 animate-fade-in-up-delay-2">
             No sign-up. No credit card. No data stored. Works on PDF, DOCX, and TXT.
           </p>
 
           {/* Upload area */}
           <div
-            className={`max-w-lg mx-auto border-2 border-dashed rounded-2xl p-10 mb-6 transition-colors cursor-pointer ${
-              dragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+            className={`max-w-lg mx-auto border-2 border-dashed rounded-2xl p-10 mb-6 transition-all duration-300 cursor-pointer animate-fade-in-up-delay-3 ${
+              dragOver ? "border-primary bg-primary/5 scale-[1.02] shadow-lg shadow-primary/10" : "border-border hover:border-primary/50 hover:shadow-md"
             }`}
             onClick={() => fileRef.current?.click()}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -165,17 +165,21 @@ const Landing = () => {
             role="button"
             aria-label="Upload resume file"
           >
-            <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-base font-semibold text-foreground mb-1">Drop your resume here or click to upload</p>
+            <div className={`transition-transform duration-300 ${dragOver ? "scale-110" : ""}`}>
+              <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            </div>
+            <p className="text-base font-semibold text-foreground mb-1">
+              {dragOver ? "Release to upload!" : "Drop your resume here or click to upload"}
+            </p>
             <p className="text-sm text-muted-foreground">Supports PDF, DOCX, and TXT files</p>
             <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.txt,.text" onChange={handleFileChange} className="hidden" aria-label="Resume file input" />
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="text-base px-8 py-6 shadow-lg" onClick={() => fileRef.current?.click()}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up-delay-4">
+            <Button size="lg" className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-shadow" onClick={() => fileRef.current?.click()}>
               <Upload className="w-5 h-5 mr-2" /> Upload Resume
             </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 py-6" onClick={handleCreateNew}>
+            <Button size="lg" variant="outline" className="text-base px-8 py-6 hover-lift" onClick={handleCreateNew}>
               <PenLine className="w-5 h-5 mr-2" /> Create Resume
             </Button>
           </div>
@@ -201,8 +205,8 @@ const Landing = () => {
             { icon: Target, title: "Keyword Matching", desc: "Paste a job description to find missing keywords and see exactly what to add to your resume." },
             { icon: Shield, title: "Format Checker", desc: "Ensure your resume uses ATS-friendly formatting — no tables, no columns, clean structure." },
           ].map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-card rounded-xl border border-border p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <div key={title} className="bg-card rounded-xl border border-border p-6 text-center card-hover">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4 transition-transform duration-200 group-hover:scale-110">
                 <Icon className="w-6 h-6 text-primary" />
               </div>
               <h3 className="font-display font-bold text-foreground mb-2">{title}</h3>

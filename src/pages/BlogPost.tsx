@@ -79,7 +79,7 @@ const BlogPost = () => {
           <h3 className="font-display text-xl font-bold text-foreground mb-2">Check Your ATS Score — It's Free</h3>
           <p className="text-sm text-muted-foreground mb-4">Upload your resume and get an instant ATS compatibility score with actionable suggestions.</p>
           <Button asChild size="lg">
-            <Link to="/"><Upload className="w-4 h-4 mr-2" /> Check My ATS Score</Link>
+            <Link to="/check-resume-score"><Upload className="w-4 h-4 mr-2" /> Check My ATS Score</Link>
           </Button>
         </div>
 
