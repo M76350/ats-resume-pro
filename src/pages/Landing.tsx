@@ -9,7 +9,8 @@ import { emptyResume, ResumeData } from "@/types/resume";
 import {
   Upload, PenLine, CheckCircle2, AlertTriangle, XCircle,
   Target, TrendingUp, Sparkles, Shield, BarChart3, X, Loader2,
-  BookOpen, ArrowRight, Zap, Users, Star,
+  BookOpen, ArrowRight, Zap, Users, Star, GraduationCap,
+  Briefcase, RefreshCw, Code2, Quote,
 } from "lucide-react";
 import Atshome from "@/components/ui/atshome";
 import SEO from "@/components/SEO";
@@ -142,10 +143,14 @@ const Landing = () => {
             <Sparkles className="w-3 h-3 mr-1" /> 100% Free — No Sign Up Required
           </Badge>
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight tracking-tight mb-5">
-            Check Your <span className="text-primary">ATS Score</span> Instantly
+            Free ATS Resume Checker<br className="hidden sm:block" />
+            <span className="text-primary"> for Freshers & Job Seekers</span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Upload your resume (PDF, DOCX, TXT) and get an instant ATS compatibility score with actionable suggestions. Free forever.
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
+            Upload your resume and get an instant ATS compatibility score — with keyword gap analysis, format check, and actionable tips to pass systems like Workday, Greenhouse, and Lever.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-10">
+            No sign-up. No credit card. No data stored. Works on PDF, DOCX, and TXT.
           </p>
 
           {/* Upload area */}
@@ -204,6 +209,78 @@ const Landing = () => {
               <p className="text-sm text-muted-foreground">{desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Who is this for */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-14">
+        <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-foreground text-center mb-3">
+          Who is FreeATS For?
+        </h2>
+        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
+          Whether you're just starting out or switching careers, FreeATS helps you get past the first filter.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            {
+              icon: GraduationCap,
+              title: "Freshers & Students",
+              desc: "Just graduated? Build your first ATS-optimized resume with our free builder and land your first interview.",
+              link: "/blog/resume-tips-for-freshers",
+              linkText: "Fresher resume tips →",
+            },
+            {
+              icon: Code2,
+              title: "Software Developers",
+              desc: "Make sure your tech skills, GitHub projects, and experience keywords pass ATS filters at top companies.",
+              link: "/blog/resume-for-developers",
+              linkText: "Developer resume guide →",
+            },
+            {
+              icon: RefreshCw,
+              title: "Career Switchers",
+              desc: "Changing industries? Learn how to reframe your experience with the right keywords for your new field.",
+              link: "/blog/ats-resume-for-career-change",
+              linkText: "Career change guide →",
+            },
+            {
+              icon: Briefcase,
+              title: "Experienced Professionals",
+              desc: "Senior roles are competitive. Ensure your resume highlights quantified achievements and passes ATS screening.",
+              link: "/blog/how-to-improve-ats-score",
+              linkText: "Improve your score →",
+            },
+          ].map(({ icon: Icon, title, desc, link, linkText }) => (
+            <div key={title} className="bg-card rounded-xl border border-border p-5 flex flex-col">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                <Icon className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-display font-bold text-foreground mb-2 text-sm">{title}</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{desc}</p>
+              <Link to={link} className="text-xs text-primary font-medium hover:underline">
+                {linkText}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Stats bar */}
+      <section className="bg-primary text-primary-foreground py-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+            {[
+              { stat: "98%", label: "Fortune 500 companies use ATS" },
+              { stat: "75%", label: "Resumes rejected before human review" },
+              { stat: "6 sec", label: "Average recruiter scan time" },
+              { stat: "3×", label: "More interviews with ATS-optimized resume" },
+            ].map(({ stat, label }) => (
+              <div key={label}>
+                <div className="font-display text-3xl sm:text-4xl font-extrabold mb-1">{stat}</div>
+                <div className="text-xs text-primary-foreground/80 leading-snug">{label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -361,6 +438,99 @@ const Landing = () => {
       </section>
 
       <Atshome />
+
+      {/* Comparison table */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        <h2 className="font-display text-3xl font-extrabold text-foreground text-center mb-3">
+          FreeATS vs. Paid Tools
+        </h2>
+        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
+          Why pay $20–$50/month when you can get the same results for free?
+        </p>
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/60 border-b border-border">
+                <th className="text-left px-5 py-3 font-semibold text-foreground">Feature</th>
+                <th className="px-5 py-3 font-semibold text-primary text-center">FreeATS ✓</th>
+                <th className="px-5 py-3 font-semibold text-muted-foreground text-center">Paid Tools</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Instant ATS Score (0–100)", true, true],
+                ["Keyword Gap Analysis", true, true],
+                ["Resume Builder", true, true],
+                ["ATS-Friendly Templates", true, true],
+                ["PDF Download", true, true],
+                ["No Sign-Up Required", true, false],
+                ["100% Free Forever", true, false],
+                ["Resume Data Never Stored", true, false],
+                ["Works in Browser (No Install)", true, false],
+              ].map(([feature, free, paid], i) => (
+                <tr key={i} className={`border-b border-border last:border-0 ${i % 2 === 0 ? "bg-background" : "bg-card"}`}>
+                  <td className="px-5 py-3 text-foreground">{feature as string}</td>
+                  <td className="px-5 py-3 text-center">
+                    {free ? <CheckCircle2 className="w-4 h-4 text-green-600 mx-auto" /> : <XCircle className="w-4 h-4 text-muted-foreground/40 mx-auto" />}
+                  </td>
+                  <td className="px-5 py-3 text-center">
+                    {paid ? <CheckCircle2 className="w-4 h-4 text-green-600 mx-auto" /> : <XCircle className="w-4 h-4 text-destructive/60 mx-auto" />}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-center text-xs text-muted-foreground mt-4">
+          * Paid tools include Zety, Novoresume, Resume.io — starting at $20–$50/month
+        </p>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-card border-y border-border py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <h2 className="font-display text-3xl font-extrabold text-foreground text-center mb-3">
+            What Job Seekers Say
+          </h2>
+          <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
+            Real feedback from people who used FreeATS to improve their resumes.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Priya S.",
+                role: "BCA Graduate, Pune",
+                text: "I had no idea my resume was scoring only 42%. After following FreeATS suggestions, I got my score to 81% and landed 3 interview calls in a week.",
+                stars: 5,
+              },
+              {
+                name: "Rahul M.",
+                role: "Software Engineer, Bangalore",
+                text: "The keyword matching feature is brilliant. I pasted the job description and instantly saw which skills I was missing. Got into a product company after 2 months of applying.",
+                stars: 5,
+              },
+              {
+                name: "Anjali K.",
+                role: "MBA Fresher, Delhi",
+                text: "Free, no sign-up, and actually useful. I've tried paid tools before — FreeATS gives the same quality feedback without charging anything. Highly recommend.",
+                stars: 5,
+              },
+            ].map(({ name, role, text, stars }) => (
+              <div key={name} className="bg-background border border-border rounded-xl p-5 flex flex-col">
+                <Quote className="w-6 h-6 text-primary/30 mb-3" />
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">"{text}"</p>
+                <div className="flex items-center gap-1 mb-2">
+                  {Array.from({ length: stars }).map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                  ))}
+                </div>
+                <p className="font-semibold text-foreground text-sm">{name}</p>
+                <p className="text-xs text-muted-foreground">{role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* FAQ Section */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 w-full">
