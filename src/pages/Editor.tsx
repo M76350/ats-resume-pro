@@ -67,8 +67,8 @@ const Editor = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Resume Builder — Build Your ATS Resume | FreeATS"
-        description="Build your ATS-optimized resume with our free resume builder. Live preview, real-time ATS scoring, and PDF download. No sign-up required."
+        title="Free Resume Builder — Build Your ATS-Optimized Resume | FreeATS"
+        description="Build your ATS-optimized resume for free with our live resume builder. Real-time ATS scoring, keyword matching, 3 templates, and PDF download. No sign-up required."
         canonical="/editor"
         noIndex={true}
       />

@@ -19,9 +19,10 @@ const Contact = () => {
   return (
     <>
       <SEO
-        title="Contact FreeATS — Get in Touch"
-        description="Have a question, feedback, or partnership inquiry? Contact the FreeATS team. We'd love to hear from you."
+        title="Contact FreeATS — Free ATS Resume Checker Support"
+        description="Contact the FreeATS team for questions, feedback, or partnership inquiries. We're here to help you build a better ATS-optimized resume for free."
         canonical="/contact"
+        keywords="contact FreeATS, ATS resume checker support, free resume builder help, resume optimization support"
       />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12 w-full">

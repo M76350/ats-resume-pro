@@ -1,6 +1,11 @@
 User-agent: *
 Allow: /
+Allow: /templates
+Allow: /blog
+Allow: /about
+Allow: /contact
 Disallow: /editor
 Disallow: /preview
 
+# Sitemap
 Sitemap: https://ats-resume-pro-swart.vercel.app/sitemap.xml

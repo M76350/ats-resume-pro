@@ -59,9 +59,10 @@ const Templates = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="ATS Resume Templates — Classic, Modern & Minimal | FreeATS"
-        description="Choose from 3 ATS-friendly resume templates: Classic, Modern, and Minimal. All templates are optimized to pass applicant tracking systems."
+        title="Free ATS Resume Templates (2026) — Classic, Modern & Minimal | FreeATS"
+        description="Choose from 3 free ATS-friendly resume templates: Classic, Modern, and Minimal. All templates are optimized to pass applicant tracking systems. No sign-up required."
         canonical="/templates"
+        keywords="free ATS resume templates, ATS friendly resume template, resume template free download, best resume template 2026, ATS compatible resume template, free resume template no sign up, modern resume template ATS, clean resume template free"
       />
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">

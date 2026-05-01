@@ -21,9 +21,10 @@ const Blog = () => {
   return (
     <>
       <SEO
-        title="ATS Resume Blog — Tips, Guides & Career Advice | FreeATS"
-        description="Read expert guides on ATS resumes, resume writing tips, job search strategies, and career advice. Free resources to help you land more interviews."
+        title="ATS Resume Blog — Free Tips, Guides & Career Advice (2026) | FreeATS"
+        description="Free expert guides on ATS resume optimization, resume writing tips, keyword strategies, and job search advice. Learn how to pass applicant tracking systems and land more interviews."
         canonical="/blog"
+        keywords="ATS resume tips, resume writing guide, how to pass ATS, resume optimization tips, free resume advice, job search tips 2026, ATS keywords guide, resume format tips, how to improve resume, career advice free"
       />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 w-full">
         <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
