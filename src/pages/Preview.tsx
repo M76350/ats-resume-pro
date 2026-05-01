@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ResumeData, emptyResume } from "@/types/resume";
 import { analyzeResume } from "@/lib/ats-analyzer";
 import ResumePreview from "@/components/ResumePreview";
@@ -70,12 +70,23 @@ const Preview = () => {
             <Button variant="ghost" size="sm" onClick={handleBack}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <FileText className="w-5 h-5 text-primary" />
-            <span className="font-display text-lg font-bold text-foreground tracking-tight">Final Preview</span>
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <FileText className="w-5 h-5 text-primary" />
+              <span className="font-display text-lg font-bold text-foreground tracking-tight">FreeATS</span>
+            </button>
+            <span className="hidden sm:block text-xs text-muted-foreground ml-1">/ Final Preview</span>
           </div>
-          <Button size="sm" onClick={handleDownload}>
-            <Download className="w-4 h-4 mr-1" /> Download PDF
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/check-resume-score")} className="hidden sm:flex text-muted-foreground hover:text-foreground text-xs">
+              ATS Checker
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/blog")} className="hidden sm:flex text-muted-foreground hover:text-foreground text-xs">
+              Blog
+            </Button>
+            <Button size="sm" onClick={handleDownload}>
+              <Download className="w-4 h-4 mr-1" /> Download PDF
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -130,6 +141,19 @@ const Preview = () => {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="no-print border-t border-border bg-card mt-8">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="hover:text-foreground transition-colors font-medium text-primary">FreeATS</Link>
+            <Link to="/check-resume-score" className="hover:text-foreground transition-colors">ATS Checker</Link>
+            <Link to="/templates" className="hover:text-foreground transition-colors">Templates</Link>
+            <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
+          </div>
+          <p>© {new Date().getFullYear()} FreeATS — Free ATS Resume Builder. 100% Free, No Sign Up.</p>
+        </div>
+      </footer>
     </div>
   );
 };
