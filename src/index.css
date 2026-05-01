@@ -8,6 +8,263 @@
   :root {
     --background: 220 20% 97%;
     --foreground: 220 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+    --primary: 220 65% 28%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 25% 10%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 46%;
+    --accent: 220 50% 94%;
+    --accent-foreground: 220 65% 28%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 65% 28%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --resume-bg: 0 0% 100%;
+    --resume-text: 0 0% 0%;
+    --resume-heading: 220 65% 22%;
+    --resume-border: 220 20% 80%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 220 10% 94%;
+    --card: 220 25% 12%;
+    --card-foreground: 220 10% 94%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 220 10% 94%;
+    --primary: 220 60% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 10% 94%;
+    --muted: 220 20% 16%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 220 30% 20%;
+    --accent-foreground: 220 60% 70%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 220 60% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --resume-bg: 0 0% 100%;
+    --resume-text: 0 0% 0%;
+    --resume-heading: 220 65% 22%;
+    --resume-border: 220 20% 80%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ─── Global animation utilities ─────────────────────────────────── */
+@layer utilities {
+
+  /* Fade in up — for page sections */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out both;
+  }
+  .animate-fade-in-up-delay-1 { animation: fadeInUp 0.5s 0.1s ease-out both; }
+  .animate-fade-in-up-delay-2 { animation: fadeInUp 0.5s 0.2s ease-out both; }
+  .animate-fade-in-up-delay-3 { animation: fadeInUp 0.5s 0.3s ease-out both; }
+  .animate-fade-in-up-delay-4 { animation: fadeInUp 0.5s 0.4s ease-out both; }
+
+  /* Fade in */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out both;
+  }
+
+  /* Scale in — for modals, cards */
+  .animate-scale-in {
+    animation: scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* Slide in from right */
+  .animate-slide-in-right {
+    animation: slideInRight 0.35s ease-out both;
+  }
+
+  /* Shimmer — for loading skeletons */
+  .animate-shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Pulse glow — for score badges */
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* Count up — for stats */
+  .animate-count {
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  /* Hover lift */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px -5px hsl(var(--primary) / 0.15);
+  }
+
+  /* Card hover */
+  .card-hover {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card-hover:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 4px 20px -4px hsl(var(--primary) / 0.12);
+    transform: translateY(-2px);
+  }
+
+  /* Progress bar fill animation */
+  .progress-animate {
+    animation: progressFill 1s ease-out both;
+  }
+
+  /* Typing cursor */
+  .cursor-blink {
+    animation: cursorBlink 1s step-end infinite;
+  }
+}
+
+/* ─── Keyframes ───────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3); }
+  50%       { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+}
+
+@keyframes progressFill {
+  from { width: 0%; }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes glitch1 {
+  0%, 90%, 100% { transform: translate(0); }
+  92%            { transform: translate(-4px, 2px); }
+  94%            { transform: translate(4px, -2px); }
+  96%            { transform: translate(-2px, 0); }
+}
+
+@keyframes glitch2 {
+  0%, 90%, 100% { transform: translate(0); }
+  93%            { transform: translate(4px, 1px); }
+  95%            { transform: translate(-4px, -1px); }
+  97%            { transform: translate(2px, 0); }
+}
+
+/* ─── Resume page styles ──────────────────────────────────────────── */
+@layer components {
+  .resume-page {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11.5pt;
+    line-height: 1.4;
+    color: hsl(var(--resume-text));
+    background: hsl(var(--resume-bg));
+  }
+  .resume-page h1 { font-size: 18pt; margin-bottom: 4px; color: hsl(var(--resume-heading)); }
+  .resume-page h2 {
+    font-size: 13pt; margin-top: 14px; margin-bottom: 4px;
+    color: hsl(var(--resume-heading));
+    border-bottom: 1.5px solid hsl(var(--resume-border));
+    padding-bottom: 2px; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .resume-page p, .resume-page li { font-size: 11.5pt; }
+  .resume-page ul { margin: 2px 0; padding-left: 18px; }
+  .resume-page li { margin-bottom: 1px; }
+}
+
+/* ─── Print styles ────────────────────────────────────────────────── */
+@media print {
+  @page { size: A4; margin: 15mm; }
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  .resume-page {
+    box-shadow: none !important; border: none !important;
+    padding: 0 !important; margin: 0 !important;
+    width: 100% !important; max-width: none !important;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 25% 10%;
 
     --card: 0 0% 100%;
     --card-foreground: 220 25% 10%;

@@ -136,10 +136,10 @@ const CheckResumeScore = () => {
           <>
             {/* Drop zone */}
             <div
-              className={`border-2 border-dashed rounded-2xl p-12 mb-6 text-center transition-all cursor-pointer ${
+              className={`border-2 border-dashed rounded-2xl p-12 mb-6 text-center transition-all duration-300 cursor-pointer animate-fade-in ${
                 dragOver
-                  ? "border-primary bg-primary/5 scale-[1.01]"
-                  : "border-border hover:border-primary/50 hover:bg-muted/30"
+                  ? "border-primary bg-primary/5 scale-[1.02] shadow-lg shadow-primary/10"
+                  : "border-border hover:border-primary/50 hover:bg-muted/30 hover:shadow-md"
               }`}
               onClick={() => fileRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -148,14 +148,14 @@ const CheckResumeScore = () => {
               role="button"
               aria-label="Upload resume file"
             >
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-primary" />
+              <div className={`w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 transition-transform duration-300 ${dragOver ? "scale-110" : ""}`}>
+                <Upload className={`w-8 h-8 text-primary transition-transform duration-300 ${dragOver ? "scale-110" : ""}`} />
               </div>
               <p className="text-base font-semibold text-foreground mb-1">
-                Drop your resume here or click to upload
+                {dragOver ? "Release to upload!" : "Drop your resume here or click to upload"}
               </p>
               <p className="text-sm text-muted-foreground mb-4">Supports PDF, DOCX, DOC, and TXT</p>
-              <Button size="lg" className="px-8">
+              <Button size="lg" className="px-8 shadow-md hover:shadow-lg transition-shadow">
                 <Upload className="w-4 h-4 mr-2" /> Upload Resume
               </Button>
               <input
@@ -169,9 +169,9 @@ const CheckResumeScore = () => {
             </div>
 
             {/* Or create new */}
-            <div className="text-center">
+            <div className="text-center animate-fade-in-up-delay-1">
               <p className="text-sm text-muted-foreground mb-3">Don't have a resume yet?</p>
-              <Button variant="outline" size="lg" onClick={handleCreateNew}>
+              <Button variant="outline" size="lg" onClick={handleCreateNew} className="hover-lift">
                 <PenLine className="w-4 h-4 mr-2" /> Build a Free ATS Resume
               </Button>
             </div>
@@ -182,8 +182,8 @@ const CheckResumeScore = () => {
                 { icon: Upload, step: "1", title: "Upload Resume", desc: "PDF, DOCX, or TXT — processed entirely in your browser." },
                 { icon: BarChart3, step: "2", title: "Get ATS Score", desc: "Instant 0–100 score across 5 key ATS criteria." },
                 { icon: TrendingUp, step: "3", title: "Fix & Improve", desc: "Follow suggestions, improve your resume, download PDF." },
-              ].map(({ icon: Icon, step, title, desc }) => (
-                <div key={step} className="bg-card border border-border rounded-xl p-4 text-center">
+              ].map(({ icon: Icon, step, title, desc }, i) => (
+                <div key={step} className={`bg-card border border-border rounded-xl p-4 text-center card-hover animate-fade-in-up-delay-${i + 1}`}>
                   <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground font-display font-bold text-sm flex items-center justify-center mx-auto mb-3">
                     {step}
                   </div>
@@ -197,37 +197,50 @@ const CheckResumeScore = () => {
 
         {/* ── LOADING STATE ── */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 gap-5">
+          <div className="flex flex-col items-center justify-center py-20 gap-5 animate-fade-in">
             <div className="relative">
               <div className="w-20 h-20 rounded-full border-4 border-muted flex items-center justify-center">
-                <FileText className="w-8 h-8 text-primary" />
+                <FileText className="w-8 h-8 text-primary animate-pulse" />
               </div>
               <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+              <div className="absolute inset-[-4px] rounded-full border-2 border-primary/20 border-b-transparent animate-spin" style={{ animationDuration: "2s", animationDirection: "reverse" }} />
             </div>
-            <p className="text-lg font-display font-bold text-foreground">{loadingText}</p>
-            <div className="w-64 h-2 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: "70%" }} />
+            <div className="text-center">
+              <p className="text-lg font-display font-bold text-foreground mb-1">{loadingText}</p>
+              <p className="text-sm text-muted-foreground">Analyzing against ATS criteria...</p>
             </div>
-            <p className="text-sm text-muted-foreground">Analyzing against ATS criteria...</p>
+            <div className="w-64 space-y-2">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: "70%" }} />
+              </div>
+              {["Parsing sections...", "Checking keywords...", "Scoring format..."].map((step, i) => (
+                <div key={step} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 0.3}s` }} />
+                  {step}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* ── RESULTS STATE ── */}
         {!loading && analysisResult && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
 
             {/* Main score card */}
-            <div className={`rounded-2xl border-2 p-8 text-center ${scoreBg(analysisResult.ats_score)}`}>
-              <ScoreIcon score={analysisResult.ats_score} />
-              <div className={`text-6xl font-display font-extrabold mt-3 mb-1 ${scoreColor(analysisResult.ats_score)}`}>
+            <div className={`rounded-2xl border-2 p-8 text-center animate-scale-in ${scoreBg(analysisResult.ats_score)}`}>
+              <div className="animate-fade-in-up">
+                <ScoreIcon score={analysisResult.ats_score} />
+              </div>
+              <div className={`text-6xl font-display font-extrabold mt-3 mb-1 animate-fade-in-up-delay-1 ${scoreColor(analysisResult.ats_score)}`}>
                 {analysisResult.ats_score}%
               </div>
-              <p className="font-semibold text-foreground mb-1">{scoreLabel(analysisResult.ats_score)}</p>
-              <p className="text-sm text-muted-foreground">{analysisResult.word_count} words detected in your resume</p>
+              <p className="font-semibold text-foreground mb-1 animate-fade-in-up-delay-2">{scoreLabel(analysisResult.ats_score)}</p>
+              <p className="text-sm text-muted-foreground animate-fade-in-up-delay-3">{analysisResult.word_count} words detected in your resume</p>
             </div>
 
             {/* Score breakdown */}
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="bg-card border border-border rounded-xl p-5 animate-fade-in-up-delay-1">
               <h2 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" /> Score Breakdown
               </h2>
@@ -238,13 +251,20 @@ const CheckResumeScore = () => {
                   { label: "Formatting", value: analysisResult.section_scores.formatting, weight: "20%" },
                   { label: "Quantified Results", value: analysisResult.section_scores.quantification, weight: "15%" },
                   { label: "Action Verbs", value: analysisResult.section_scores.clarity, weight: "15%" },
-                ].map(({ label, value, weight }) => (
-                  <div key={label}>
+                ].map(({ label, value, weight }, i) => (
+                  <div key={label} className={`animate-fade-in-up-delay-${Math.min(i + 1, 4)}`}>
                     <div className="flex justify-between text-xs text-muted-foreground mb-1">
                       <span>{label} <span className="opacity-50">({weight})</span></span>
-                      <span className={scoreColor(value)}>{value}%</span>
+                      <span className={`font-semibold ${scoreColor(value)}`}>{value}%</span>
                     </div>
-                    <Progress value={value} className="h-2" />
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                          value >= 80 ? "bg-green-500" : value >= 60 ? "bg-yellow-500" : "bg-destructive"
+                        }`}
+                        style={{ width: `${value}%`, animationDelay: `${i * 0.1}s` }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
