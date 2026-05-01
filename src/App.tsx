@@ -22,6 +22,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
+const CheckResumeScore = lazy(() => import("./pages/CheckResumeScore"));
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                 <Route path="/disclaimer" element={<Disclaimer />} />
+                <Route path="/check-resume-score" element={<CheckResumeScore />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
               {/* Editor & Preview have their own custom headers */}
