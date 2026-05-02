@@ -101,10 +101,28 @@ const CheckResumeScore = () => {
   return (
     <>
       <SEO
-        title="Check Your Resume ATS Score Free — Instant Results | FreeATS"
-        description="Upload your resume and get an instant ATS compatibility score. Free resume ATS checker — no sign-up, no data stored. Find missing keywords and fix formatting issues in seconds."
+        title="Check Resume ATS Score Free — Instant Results"
+        description="Upload your resume and get an instant ATS score in seconds. Free resume checker — no sign-up, no data stored. Find missing keywords & fix formatting issues now."
         canonical="/check-resume-score"
         keywords="check resume ATS score, free ATS score checker, resume score checker online, ATS resume test free, check my resume score, resume compatibility checker, free resume scanner"
+        faqSchema={[
+          {
+            q: "How do I check my resume ATS score for free?",
+            a: "Upload your resume (PDF, DOCX, or TXT) on FreeATS and get an instant ATS compatibility score from 0–100. No sign-up required, completely free.",
+          },
+          {
+            q: "What is a good ATS score for a resume?",
+            a: "A score of 80 or above is excellent and means your resume is well-optimized for ATS. Scores between 60–80 are good with minor improvements needed. Below 60 requires significant improvements.",
+          },
+          {
+            q: "Does checking my resume store my data?",
+            a: "No. All resume processing happens entirely in your browser. Your resume data never leaves your device and is never stored on any server.",
+          },
+          {
+            q: "What file formats are supported for ATS checking?",
+            a: "FreeATS supports PDF, DOCX, DOC, and TXT files for ATS score checking.",
+          },
+        ]}
       />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 w-full">

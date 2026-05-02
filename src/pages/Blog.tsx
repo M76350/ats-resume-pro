@@ -21,8 +21,8 @@ const Blog = () => {
   return (
     <>
       <SEO
-        title="ATS Resume Blog — Free Tips, Guides & Career Advice (2026) | FreeATS"
-        description="Free expert guides on ATS resume optimization, resume writing tips, keyword strategies, and job search advice. Learn how to pass applicant tracking systems and land more interviews."
+        title="ATS Resume Tips & Guides — Free Blog | FreeATS"
+        description="Free expert guides on ATS resume optimization, keyword strategies & job search tips. Learn how to pass ATS and land more interviews. No sign-up needed."
         canonical="/blog"
         keywords="ATS resume tips, resume writing guide, how to pass ATS, resume optimization tips, free resume advice, job search tips 2026, ATS keywords guide, resume format tips, how to improve resume, career advice free"
       />

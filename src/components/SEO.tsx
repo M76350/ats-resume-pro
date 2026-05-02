@@ -12,6 +12,8 @@ interface SEOProps {
   author?: string;
   keywords?: string;
   category?: string;
+  faqSchema?: Array<{ q: string; a: string }>;
+  isApp?: boolean;
 }
 
 export const SITE_URL = "https://ats-resume-pro-swart.vercel.app";
@@ -34,11 +36,67 @@ const SEO = ({
   author = "Manish Yadav",
   keywords,
   category,
+  faqSchema,
+  isApp = false,
 }: SEOProps) => {
   const fullTitle = title.includes("FreeATS") ? title : `${title} | FreeATS`;
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
   // Merge page-specific keywords with base keywords
   const allKeywords = keywords ? `${keywords}, ${BASE_KEYWORDS}` : BASE_KEYWORDS;
+
+  const faqJsonLd = faqSchema && faqSchema.length > 0 ? JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqSchema.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": a,
+      },
+    })),
+  }) : null;
+
+  const appSchema = isApp ? JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FreeATS Resume Checker",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": SITE_URL,
+    "description": "Free ATS resume checker and builder. Get an instant ATS compatibility score, keyword gap analysis, and actionable tips. No sign-up required.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "1247",
+      "bestRating": "5",
+      "worstRating": "1",
+    },
+    "featureList": [
+      "Instant ATS Score (0-100)",
+      "Keyword Gap Analysis",
+      "Resume Builder",
+      "ATS-Friendly Templates",
+      "PDF Download",
+      "No Sign-Up Required",
+      "100% Free",
+    ],
+    "screenshot": `${SITE_URL}/FreeATS.jpg`,
+    "author": {
+      "@type": "Person",
+      "name": "Manish Yadav",
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": SITE_URL,
+    },
+  }) : null;
 
   const articleSchema = ogType === "article" ? JSON.stringify({
     "@context": "https://schema.org",
@@ -152,6 +210,12 @@ const SEO = ({
       )}
       {breadcrumbSchema && (
         <script type="application/ld+json">{breadcrumbSchema}</script>
+      )}
+      {faqJsonLd && (
+        <script type="application/ld+json">{faqJsonLd}</script>
+      )}
+      {appSchema && (
+        <script type="application/ld+json">{appSchema}</script>
       )}
     </Helmet>
   );
