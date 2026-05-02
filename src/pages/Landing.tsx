@@ -100,10 +100,45 @@ const Landing = () => {
   return (
     <>
       <SEO
-        title="Free ATS Resume Checker & Builder (2026) — Instant Score | FreeATS"
-        description="Free ATS resume checker and builder. Upload your resume (PDF, DOCX, TXT) and get an instant ATS compatibility score, keyword gap analysis, and actionable tips to pass applicant tracking systems. No sign-up. 100% free."
+        title="Free ATS Resume Checker — Instant Score, No Sign Up"
+        description="Check your resume's ATS score instantly. Upload PDF/DOCX and get keyword gaps, format issues & tips to pass Workday, Greenhouse & Lever. 100% free, no sign-up."
         canonical="/"
         keywords="free ATS resume checker, ATS resume score, check resume ATS, free resume builder, ATS friendly resume builder, resume keyword checker free, applicant tracking system checker, resume scanner free, ATS score checker online, free CV checker, resume optimizer free, ATS resume test, resume checker no sign up, best free ATS checker 2026, resume ATS score online"
+        isApp={true}
+        faqSchema={[
+          {
+            q: "What is an ATS resume checker?",
+            a: "An ATS resume checker analyzes your resume against criteria used by Applicant Tracking Systems — software employers use to automatically screen job applications. It checks keyword match, formatting quality, section completeness, and more.",
+          },
+          {
+            q: "Is FreeATS really free?",
+            a: "Yes, 100% free. No sign-up, no credit card, no hidden fees. You can upload your resume and get an instant ATS score without creating an account.",
+          },
+          {
+            q: "Does FreeATS store my resume data?",
+            a: "No. All resume processing happens entirely in your browser. Your resume data never leaves your device and is never stored on our servers.",
+          },
+          {
+            q: "What file formats does FreeATS support?",
+            a: "FreeATS supports PDF, DOCX, DOC, and TXT files. For best results, use a text-based PDF or DOCX file.",
+          },
+          {
+            q: "What does the ATS score mean?",
+            a: "The ATS score (0–100) represents how well your resume is likely to perform in an ATS system. Scores above 80 are excellent, 60–80 is good, and below 60 needs improvement.",
+          },
+          {
+            q: "How do I improve my ATS score?",
+            a: "The most impactful improvements are: tailor your resume to the job description, add a dedicated skills section, use standard section headings, quantify your achievements with numbers, and use a clean single-column layout.",
+          },
+          {
+            q: "Can I use FreeATS to build a resume from scratch?",
+            a: "Yes! Click 'Create Resume' to use our resume builder. Choose from 3 ATS-friendly templates, fill in your information, and download your resume as a PDF.",
+          },
+          {
+            q: "How accurate is the ATS score?",
+            a: "FreeATS uses scoring criteria based on research into how real ATS systems work. Our scoring is based on the most common and impactful factors across major platforms like Workday, Greenhouse, and Lever.",
+          },
+        ]}
       />
 
       {/* SEO: keyword-rich descriptive text for crawlers */}

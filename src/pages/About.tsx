@@ -6,8 +6,8 @@ import { FileText, Target, Shield, Zap, Mail, Github, Linkedin, User } from "luc
 const About = () => (
   <>
     <SEO
-      title="About FreeATS — Free ATS Resume Checker & Builder, No Sign-Up"
-      description="FreeATS is a 100% free ATS resume checker and builder built by Manish Yadav. No sign-up, no fees. Check your ATS score, fix keyword gaps, and build an ATS-friendly resume in minutes."
+      title="About FreeATS — Free ATS Resume Checker, No Sign-Up"
+      description="FreeATS is a 100% free ATS resume checker & builder by Manish Yadav. No sign-up, no fees. Check your ATS score, fix keyword gaps & build an ATS resume in minutes."
       canonical="/about"
       keywords="about FreeATS, free ATS resume checker, Manish Yadav, ATS resume builder free, no sign up resume checker, free resume optimization tool, who made FreeATS"
     />

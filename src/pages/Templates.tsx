@@ -209,8 +209,8 @@ const Templates = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Free ATS Resume Templates 2026 — For Freshers & Experienced | FreeATS"
-        description="Choose from 6 free ATS-friendly resume templates for freshers and experienced professionals. Classic, Modern, Bold, Executive, Compact & Elegant. No sign-up required."
+        title="Free ATS Resume Templates — Freshers & Experienced (2026)"
+        description="12 free ATS-friendly resume templates for freshers & experienced professionals. Classic, Bold, Executive & more. No sign-up. Download as PDF instantly."
         canonical="/templates"
         keywords="free ATS resume templates, resume template for freshers, resume template for experienced, ATS friendly resume template 2026, free resume template India, best resume template for freshers, executive resume template free"
       />
